@@ -12,6 +12,8 @@ app.get('/game', (req,res) => {
         res.sendFile(__dirname + '/twgame.html')
     }else if (req.query.mode === 'online'){
         res.sendFile(__dirname + '/scgame.html')
+    }else{
+        res.redirect('/')
     }
 });
 
