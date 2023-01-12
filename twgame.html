@@ -8,13 +8,20 @@
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+        <style>
+            body{
+                padding:10px;
+            }
+        </style>
     </head>
     <body>
         <h2>
             Noughts and Crosses
-            <small class="text-muted">Local Multiplayer</small>
+            <small class="text-muted">Local Multiplayer</small><br>
+            <a class="btn btn-primary" role="button" href="/">< Back home</a>
+            <br>
         </h2>
-        <canvas id="canvas" width="466" height="466" style="padding: 10px;"></canvas>
+        <canvas id="canvas" width="466" height="466"></canvas>
         <script src="./twoplayer.js"></script>
     </body>
 </html>
