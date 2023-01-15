@@ -1,6 +1,8 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const boardSize = 3;
+const boardCells = 3;
+const length = 150;
+const boardSize = 466;
 let board = [];
 
 const player1 = {
@@ -14,13 +16,13 @@ const player2 = {
 
 
 function createBoard(){
-    for (let y=1;y <=boardSize;y++){
-        for (let x=1;x<=boardSize;x++){
+    for (let y=1;y <=boardCells;y++){
+        for (let x=1;x<=boardCells;x++){
             board.push({x:x,y:y,data:null});
         }
     }
     console.log(board)
-    context.fillRect(0,0,466,466);
+    context.fillRect(0,0,boardSize,boardSize);
     //top row
     context.clearRect(4,4,150,150);
     context.clearRect(158,4,150,150);
@@ -80,3 +82,15 @@ function checkWin(bd2){
 // }
 
 createBoard();
+
+canvas.addEventListener('click',function(event){
+    let x = Math.round(event.clientX - canvas.getBoundingClientRect().left);
+    let y = Math.round(event.clientY - canvas.getBoundingClientRect().top);
+    let cellx = Math.floor((x-16)/150) + 1;
+    let celly = Math.floor((y-16)/150) + 1;
+    console.log(cellx,celly);
+    let index = board.findIndex(b => b.x == cellx && b.y == celly);
+    console.log("cell",index);
+
+
+},false);
