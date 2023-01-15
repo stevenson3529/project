@@ -1,9 +1,9 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const boardCells = 3; //value will be 3 for 3x3 grid
-const length = 150; //cell length/width
-const boardSize = 466;
-const borderWidth = 4;
+const cellWidth = 300; //cell length/width
+const borderWidth = 8;
+const boardSize = (((boardCells +1)*borderWidth)+ (boardCells * cellWidth));
 
 let board = [];
 
@@ -26,17 +26,17 @@ function createBoard(){
     console.log(board)
     context.fillRect(0,0,boardSize,boardSize);
     //top row
-    context.clearRect(4,4,150,150);
-    context.clearRect(158,4,150,150);
-    context.clearRect(312,4,150,150);
+    context.clearRect(borderWidth,borderWidth,cellWidth,cellWidth);
+    context.clearRect((cellWidth + (2*borderWidth)),borderWidth,cellWidth,cellWidth);
+    context.clearRect(((2*cellWidth) + (3*borderWidth)),borderWidth,cellWidth,cellWidth);
     //middle row
-    context.clearRect(4,158,150,150);
-    context.clearRect(158,158,150,150);
-    context.clearRect(312,158,150,150);
+    context.clearRect(borderWidth,(cellWidth + (2*borderWidth)),cellWidth,cellWidth);
+    context.clearRect((cellWidth + (2*borderWidth)),(cellWidth + (2*borderWidth)),cellWidth,cellWidth);
+    context.clearRect(((2*cellWidth) + (3*borderWidth)),(cellWidth + (2*borderWidth)),cellWidth,cellWidth);
     //bottom row
-    context.clearRect(4,312,150,150);
-    context.clearRect(158,312,150,150);
-    context.clearRect(312,312,150,150);
+    context.clearRect(borderWidth, ((2*cellWidth) + (3*borderWidth)),cellWidth,cellWidth);
+    context.clearRect((cellWidth + (2*borderWidth)),((2*cellWidth) + (3*borderWidth)),cellWidth,cellWidth);
+    context.clearRect(((2*cellWidth)+(3*borderWidth)),((2*cellWidth)+(3*borderWidth)),cellWidth,cellWidth);
     //add grid numbers
     context.font = "16pt sans-serif";
     context.fillText("0",140,25);
@@ -90,9 +90,17 @@ canvas.addEventListener('click',function(event){
     let y = Math.round(event.clientY - canvas.getBoundingClientRect().top);
     let cellx = Math.floor((x-16)/150) + 1;
     let celly = Math.floor((y-16)/150) + 1;
+    //1 is added as the x&y coordinates start from one in the 'board array'
     console.log(cellx,celly);
-    let index = board.findIndex(b => b.x == cellx && b.y == celly);
+    let index = board.findIndex(board => board.x == cellx && board.y == celly);
     console.log("cell",index);
-    addMark(index);
 },false);
 
+
+
+//     let cellx = Math.floor((x-16)/150) + 1;
+//     let celly = Math.floor((y-16)/150) + 1;
+//     console.log(cellx,celly);
+//     let index = board.findIndex(b => b.x == cellx && b.y == celly);
+//     console.log("cell",index);
+//     addMark(index);
