@@ -4,7 +4,7 @@ const port = 80;
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/menu.html'));
 app.listen(port, () => console.log(`listening on port ${port}`))
-app.use(express.static(__dirname + '/scripts'));
+app.use(express.static(__dirname + '/public/scripts'));
 
 app.get('/game', (req,res) => {
     if (req.query.mode === 'singleplayer'){
