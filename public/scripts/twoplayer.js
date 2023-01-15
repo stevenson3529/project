@@ -1,10 +1,13 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const boardCells = 3;
-const length = 150;
+const boardCells = 3; //value will be 3 for 3x3 grid
+const length = 150; //cell length/width
 const boardSize = 466;
+const borderWidth = 4;
+
 let board = [];
 
+//player enums
 const player1 = {
     symbol: 'x',
     name: 'Player 1'
@@ -13,7 +16,6 @@ const player2 = {
     symbol: 'o',
     name: 'Player2'
 };
-
 
 function createBoard(){
     for (let y=1;y <=boardCells;y++){
@@ -91,6 +93,6 @@ canvas.addEventListener('click',function(event){
     console.log(cellx,celly);
     let index = board.findIndex(b => b.x == cellx && b.y == celly);
     console.log("cell",index);
-
-
+    addMark(index);
 },false);
+
