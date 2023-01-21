@@ -90,9 +90,9 @@ function checkWin(){
 }
 
 function addMark(c){
-    if (game.state == state.PLAYING){
-        if (board[c].data == null){
-            board[c].data = game.turn;
+    if (game.state == state.PLAYING){ //only works when game is playing
+        if (board[c].data == null){ //checks cell is empty before playing
+            board[c].data = game.turn; // updates the board array with which player played
             if(game.turn == 'X'){
                 context.font = "36pt sans-serif"
                 context.fillText("X",((board[c].x * borderWidth)),((board[c].y * borderWidth)));
@@ -104,7 +104,7 @@ function addMark(c){
                 game.turn = 'X'
                 console.log('O played in cell',c)
             }
-        }else{
+        }else{ //when cell is not empty
             console.log('cell already played!')
         }
     }
