@@ -91,17 +91,21 @@ function checkWin(){
 
 function addMark(c){
     if (game.state == state.PLAYING){
-        if (board[c].data === null){
+        if (board[c].data == null){
             board[c].data = game.turn;
             if(game.turn == 'X'){
                 context.font = "36pt sans-serif"
                 context.fillText("X",((board[c].x * borderWidth)),((board[c].y * borderWidth)));
                 game.turn = 'O'
+                console.log('X played in cell',c)
             } else if (game.turn == 'O'){
                 context.font = "36pt sans-serif"
                 context.fillText("O",(+(board[c].x * borderWidth)),((board[c].y * borderWidth)));
                 game.turn = 'X'
+                console.log('O played in cell',c)
             }
+        }else{
+            console.log('cell already played!')
         }
     }
 };
