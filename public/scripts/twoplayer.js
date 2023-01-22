@@ -1,7 +1,7 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const boardCells = 3; //value will be 3 for 3x3 grid
-const cellWidth = 165; //cell length/width
+const cellWidth = 100; //cell length/width
 const borderWidth = 5;
 const boardSize = (((boardCells +1)*borderWidth)+ (boardCells * cellWidth));
 
@@ -73,18 +73,18 @@ function areEqual(){
 }
 
 function checkWin(){
-    if(
-        areEqual(board[0].data,board[1].data,board[2].data)
-        || areEqual(board[3].data,board[4].data,board[5].data)
-        || areEqual(board[6].data,board[7].data,board[8].data)
-        || areEqual(board[0].data,board[3].data,board[6].data)
-        || areEqual(board[1].data,board[4].data,board[7].data)
-        || areEqual(board[2].data,board[5].data,board[8].data)
-        || areEqual(board[0].data,board[4].data,board[8].data)
-        || areEqual(board[2].data,board[4].data,board[8].data)
-    ){
-        console.log("Win");
-        return true;
+    //find all squares X has played in
+    let xPlays = [];
+    for (let g=0;g<board.length;g++){
+        if (board[g].data == 'X'){
+            xPlays.push({x:board[g].x,y:board[g].y});
+
+        }
+    }
+    //find all squares Y has played in
+    let yPlays = [];
+    for (let h=0;h<board.length;h++){
+        yPlays.push({x:board[h].x,y:board[h].y});
     }
     return false;
 }
@@ -93,17 +93,18 @@ function addMark(c){
     if (game.state == state.PLAYING){ //only works when game is playing
         if (board[c].data == null){ //checks cell is empty before playing
             board[c].data = game.turn; // updates the board array with which player played
+            context.font = "36pt sans-serif";
+            context.textAlign = "center";
             if(game.turn == 'X'){
-                context.font = "36pt sans-serif"
-                context.fillText("X",((board[c].x * borderWidth)),((board[c].y * borderWidth)));
+                context.fillText("X",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 game.turn = 'O'
                 console.log('X played in cell',c)
             } else if (game.turn == 'O'){
-                context.font = "36pt sans-serif"
-                context.fillText("O",(+(board[c].x * borderWidth)),((board[c].y * borderWidth)));
+                context.fillText(".",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 game.turn = 'X'
                 console.log('O played in cell',c)
             }
+            checkWin();
         }else{ //when cell is not empty
             console.log('cell already played!')
         }
@@ -123,12 +124,3 @@ canvas.addEventListener('click',function(event){
     console.log("cell",index);
     addMark(index);
 },false);
-
-
-
-//     let cellx = Math.floor((x-16)/150) + 1;
-//     let celly = Math.floor((y-16)/150) + 1;
-//     console.log(cellx,celly);
-//     let index = board.findIndex(b => b.x == cellx && b.y == celly);
-//     console.log("cell",index);
-    // addMark(index)
