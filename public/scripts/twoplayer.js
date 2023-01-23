@@ -86,7 +86,6 @@ function checkWin(){
         }
     }
     console.log(plays)
-    //check horizontal wins
     return false;
 }
 
@@ -99,17 +98,19 @@ function addMark(c){
             if(game.turn == 'X'){
                 context.fillText("X",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('X played in cell',c);
-                checkWin();
-                game.moves++;
-                game.turn = 'O';
-                turnIndicator();
+                if(!checkWin()){
+                    game.moves++;
+                    game.turn = 'O';
+                    turnIndicator();
+                }
             } else if (game.turn == 'O'){
                 context.fillText("O",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('O played in cell',c);
-                checkWin();
-                game.moves++;
-                game.turn = 'X';
-                turnIndicator();
+                if(!checkWin()){
+                    game.moves++;
+                    game.turn = 'X';
+                    turnIndicator();
+                }
             }
         }else{ //when cell is not empty
             console.log('cell already played!')
