@@ -10,7 +10,7 @@ let board = [];
 const state = {
     PLAYING: 'playing',
     STOPPED: 'stopped',
-    WON: 'won'
+    WON: 'won',
 }
 
 //player enums
@@ -24,7 +24,8 @@ const player2 = {
 };
 const game = {
     state: state.PLAYING,
-    turn: 'X'
+    turn: 'X',
+    moves: 0
 }
 
 function createBoard(){
@@ -58,10 +59,14 @@ function createBoard(){
     //     context.fillText("6",140,335);
     //     context.fillText("7",295,335);
     //     context.fillText("8",450,335);
-    context.font = "24pt sans-serif";
-    context.fillText("Turn: " + game.turn, boardSize + 25, 25)
+    turnIndicator();
 };
-
+function turnIndicator(){
+    context.clearRect((boardSize+25),25,(boardSize+100),100);
+    context.font = "24pt sans-serif";
+    context.textAlign = "start"
+    context.fillText("Turn: " + game.turn, boardSize + 50, 50)
+}
 
 function areEqual(){
     for(let u=1;u<arguments.length;u++){
@@ -73,19 +78,15 @@ function areEqual(){
 }
 
 function checkWin(){
-    //find all squares X has played in
-    let xPlays = [];
+    //find all squares current player has played in
+    let plays = [];
     for (let g=0;g<board.length;g++){
-        if (board[g].data == 'X'){
-            xPlays.push({x:board[g].x,y:board[g].y});
-
+        if (board[g].data == game.turn){
+            plays.push({x:board[g].x,y:board[g].y});
         }
     }
-    //find all squares Y has played in
-    let yPlays = [];
-    for (let h=0;h<board.length;h++){
-        yPlays.push({x:board[h].x,y:board[h].y});
-    }
+    console.log(plays)
+    //check horizontal wins
     return false;
 }
 
@@ -97,14 +98,19 @@ function addMark(c){
             context.textAlign = "center";
             if(game.turn == 'X'){
                 context.fillText("X",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
-                game.turn = 'O'
-                console.log('X played in cell',c)
+                console.log('X played in cell',c);
+                checkWin();
+                game.moves++;
+                game.turn = 'O';
+                turnIndicator();
             } else if (game.turn == 'O'){
-                context.fillText(".",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
-                game.turn = 'X'
-                console.log('O played in cell',c)
+                context.fillText("O",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
+                console.log('O played in cell',c);
+                checkWin();
+                game.moves++;
+                game.turn = 'X';
+                turnIndicator();
             }
-            checkWin();
         }else{ //when cell is not empty
             console.log('cell already played!')
         }
