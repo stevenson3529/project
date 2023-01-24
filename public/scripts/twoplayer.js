@@ -77,13 +77,11 @@ function checkWin(){
     for (let h=0;h<=plays.length;h++){ //for each item in the list of plays...
         //check if it is in a line horizontally
         for(let d=0;d<boardCells;d++){
-            if (plays[h] == 0|| plays[h]==3|| plays[h] == 6){
-                if(plays[h+1]-plays[h]==1){
-                    if(plays[h+2]-plays[h+1]==1){
-                        console.log(game.turn,'wins');
-                        game.state = state.STOPPED;
-                        return true;
-                    }
+            if(plays[h+1]-plays[h]==1){
+                if(plays[h+2]-plays[h+1]==1){
+                    console.log(game.turn,'wins');
+                    game.state = state.STOPPED;
+                    return true;
                 }
             }
         }
