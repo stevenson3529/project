@@ -48,24 +48,13 @@ function createBoard(){
     context.clearRect(borderWidth, ((2*cellWidth) + (3*borderWidth)),cellWidth,cellWidth);
     context.clearRect((cellWidth + (2*borderWidth)),((2*cellWidth) + (3*borderWidth)),cellWidth,cellWidth);
     context.clearRect(((2*cellWidth)+(3*borderWidth)),((2*cellWidth)+(3*borderWidth)),cellWidth,cellWidth);
-    //     //add grid numbers
-    //     context.font = "16pt sans-serif";
-    //     context.fillText("0",140,25);
-    //     context.fillText("1",295,25);
-    //     context.fillText("2",450,25);
-    //     context.fillText("3",140,180);
-    //     context.fillText("4",295,180);
-    //     context.fillText("5",450,180);
-    //     context.fillText("6",140,335);
-    //     context.fillText("7",295,335);
-    //     context.fillText("8",450,335);
     turnIndicator();
 };
 function turnIndicator(){
     context.clearRect((boardSize+25),25,(boardSize+100),100);
     context.font = "24pt sans-serif";
     context.textAlign = "start"
-    context.fillText("Turn: " + game.turn, boardSize + 50, 50)
+    context.fillText("Turn: " + game.turn, boardSize + 30, 50)
 }
 
 function areEqual(){
@@ -76,13 +65,26 @@ function areEqual(){
         return true;
     }
 }
-
+ 
 function checkWin(){
     //find all squares current player has played in
     let plays = [];
-    for (let g=0;g<board.length;g++){
+    for (let g=0;g<board.length;g++){ //populates the array of cells the player has played in
         if (board[g].data == game.turn){
-            plays.push({x:board[g].x,y:board[g].y});
+            plays.push(g);
+        }
+    }
+    for (let h=0;h<=plays.length;h++){ //for each item in the list of plays...
+        //check if it is in a line horizontally
+        for(let d=0;d<boardCells;d++){
+            if (plays[h] == 0|| plays[h]==3|| plays[h] == 6)
+                if(plays[h+1]-plays[h]==1){
+                    if(plays[h+2]-plays[h+1]==1){
+                        console.log(game.turn,'wins');
+                        game.state = state.STOPPED;
+                        return true;
+                    }
+                }
         }
     }
     console.log(plays)
