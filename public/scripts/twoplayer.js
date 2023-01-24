@@ -96,7 +96,14 @@ function checkWin(){
             }
         }
     }
+    if(game.moves >=(boardCells**2)){ //if all moves have been played and there is no winner
+        console.log("no winners");
+        game.state = state.STOPPED;
+        turnIndicator();
+        return true;
+    }
     console.log(plays)
+    game.moves++ //increments moves by one after checking game hasn't been won
     return false;
 }
 
@@ -110,7 +117,6 @@ function addMark(c){
                 context.fillText("X",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('X played in cell',c);
                 if(!checkWin()){
-                    game.moves++;
                     game.turn = 'O';
                     turnIndicator();
                 }
@@ -118,7 +124,6 @@ function addMark(c){
                 context.fillText("O",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('O played in cell',c);
                 if(!checkWin()){
-                    game.moves++;
                     game.turn = 'X';
                     turnIndicator();
                 }
