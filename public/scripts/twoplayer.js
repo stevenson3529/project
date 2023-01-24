@@ -56,8 +56,10 @@ function turnIndicator(){
     context.textAlign = "start"
     if(game.state == state.PLAYING){    
         context.fillText("Turn: " + game.turn, boardSize + 30, 50)
-    }else if(game.state == state.STOPPED){
+    }else if(game.state == state.WON){
         context.fillText(game.turn + " wins", boardSize + 30, 50)
+    }else if(game.state == state.STOPPED){
+        context.fillText("No winner", boardSize + 30, 50)
     }
 }
 
@@ -86,7 +88,7 @@ function checkWin(){
                 if(plays[h+1]-plays[h]==1){
                     if(plays[h+2]-plays[h+1]==1){
                         console.log(game.turn,'wins');
-                        game.state = state.STOPPED;
+                        game.state = state.WON;
                         turnIndicator();
                         return true;
                     }
