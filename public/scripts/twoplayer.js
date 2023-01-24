@@ -85,6 +85,7 @@ function checkWin(){
                         return true;
                     }
                 }
+            }
         }
     }
     console.log(plays)
