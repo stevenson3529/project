@@ -63,15 +63,6 @@ function turnIndicator(){
     }
 }
 
-function areEqual(){
-    for(let u=1;u<arguments.length;u++){
-        if (arguments[u] === null || arguments[u] !== arguments[u-1]){
-            return false;
-        }
-        return true;
-    }
-}
- 
 function checkWin(){
     //find all squares current player has played in
     let plays = [];
@@ -96,7 +87,7 @@ function checkWin(){
             }
         }
     }
-    if(game.moves >=(boardCells**2)){ //if all moves have been played and there is no winner
+    if(game.moves ==(boardCells**2)){ //if all moves have been played and there is no winner
         console.log("no winners");
         game.state = state.STOPPED;
         turnIndicator();
@@ -116,7 +107,7 @@ function addMark(c){
             if(game.turn == 'X'){
                 context.fillText("X",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('X played in cell',c);
-                if(!checkWin()){
+                if(checkWin() == false){
                     game.turn = 'O';
                     turnIndicator();
                 }
