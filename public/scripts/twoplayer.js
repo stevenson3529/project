@@ -77,8 +77,8 @@ function checkWin(){
         for(let d=0;d<boardCells;d++){
             let indexes = (boardCells==3)? (plays[h] == 0|| plays[h]==3|| plays[h] == 6):(plays[h] == 0|| plays[h]==4|| plays[h] == 8|| plays[h] == 12)
             if (indexes){ //checking horizontally
-                if(plays[h+1]-plays[h]==1){
-                    if(plays[h+2]-plays[h+1]==1){
+                if(plays[h+1]-plays[h]==1){ //checks the next index in the lists array is consecutive -- this is to check if the player has played in a row.
+                    if(plays[h+2]-plays[h+1]==1){ //checks the next index in the lists array
                         console.log(game.turn,'wins horizontally');
                         game.state = state.WON;
                         turnIndicator();
@@ -88,7 +88,7 @@ function checkWin(){
             }
             indexes = (boardCells==3)? (plays[h] == 0 || plays[h] == 1 || plays[h] == 2):(plays[h] == 0 || plays[h] == 1 || plays[h] == 2 || plays[h] == 3)
             if (indexes){ //checking vertically
-                if(plays.includes(h+boardCells)){
+                if(plays.includes(h+boardCells)){ //checks if the player has played
                     if(plays.includes(h+(2*boardCells))){
                         console.log(game.turn,'wins vertically');
                         game.state = state.WON;
