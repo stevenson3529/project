@@ -1,20 +1,23 @@
 const express = require('express');
 const app = express();
-const port = 80;
+const port = 80; //Default HTTP Port
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/menu.html'));
 app.listen(port, () => console.log(`listening on port ${port}`))
 app.use(express.static(__dirname + '/public/scripts'));
 
 app.get('/game', (req,res) => {
-    if (req.query.mode === 'singleplayer'){
-        res.sendFile(__dirname + '/spgame.html')
-    }else if (req.query.mode === 'multiplayer'){
-        res.sendFile(__dirname + '/twgame.html')
-    }else if (req.query.mode === 'online'){
-        res.sendFile(__dirname + '/scgame.html')
-    }else{
-        res.redirect('/')
+    switch(req.query.mode){
+        case "singleplayer":
+            res.sendFile(__dirname + '/spgame.html');
+            break;
+        case "multiplayer":
+            res.sendFile(__dirname + '/twgame.html');
+            break;
+        case "online":
+            res.sendFile(__dirname + '/scgame.html');
+            break;
+        default:
+            res.redirect('/')
     }
 });
-
