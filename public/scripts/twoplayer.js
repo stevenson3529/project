@@ -88,7 +88,8 @@ function checkWin(){
             }
             indexes = (boardCells==3)? (plays[h] == 0 || plays[h] == 1 || plays[h] == 2):(plays[h] == 0 || plays[h] == 1 || plays[h] == 2 || plays[h] == 3)
             if (indexes){ //checking vertically
-                if(plays.includes(h+boardCells)){ //checks if the player has played
+                //The vertical check could not use the same iteration loop as the horizontal check, as the plays index is sorted by index. Therefore if the player played in (1,1), (2,1), and (1,2), the iterative loop would have only searched the horizontal loop first and met the break condition.
+                if(plays.includes(h+boardCells)){ //checks if the player has played in the cell below
                     if(plays.includes(h+(2*boardCells))){
                         console.log(game.turn,'wins vertically');
                         game.state = state.WON;
@@ -146,6 +147,13 @@ canvas.addEventListener('click',function(event){
     //1 is added as the x&y coordinates start from one in the 'board array'
     console.log(cellx,celly);
     let index = board.findIndex(board => board.x == cellx && board.y == celly);
-    console.log("cell",index);
-    addMark(index);
+    switch(index){
+        case -1:
+            console.log("clicked outside board");
+            break;
+    
+        default:
+            console.log("clicked on cell",index);
+            addMark(index);
+    } ;
 },false);
