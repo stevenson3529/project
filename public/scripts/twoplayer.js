@@ -24,7 +24,7 @@ const player2 = {
 };
 const game = {
     state: state.PLAYING,
-    turn: 'X',
+    turn: player1.symbol,
     moves: 0
 }
 
@@ -73,10 +73,10 @@ function checkWin(){
     }
     console.log(plays);
     for (let h=0;h<=plays.length;h++){ //for each item in the list of plays...
-        //check if it is in a line horizontally
         for(let d=0;d<boardCells;d++){
-            let indexes = (boardCells==3)? (plays[h] == 0|| plays[h]==3|| plays[h] == 6):(plays[h] == 0|| plays[h]==4|| plays[h] == 8|| plays[h] == 12)
-            if (indexes){ //checking horizontally
+            //checking horizontally:
+            let indexes = (boardCells==3)? (plays[h] == 0|| plays[h]==3|| plays[h] == 6):(plays[h] == 0|| plays[h]==4|| plays[h] == 8|| plays[h] == 12) //only checks from the start of each row
+            if (indexes){
                 if(plays[h+1]-plays[h]==1){ //checks the next index in the lists array is consecutive -- this is to check if the player has played in a row.
                     if(plays[h+2]-plays[h+1]==1){ //checks the next index in the lists array
                         console.log(game.turn,'wins horizontally');
@@ -86,12 +86,36 @@ function checkWin(){
                     }
                 }
             }
-            indexes = (boardCells==3)? (plays[h] == 0 || plays[h] == 1 || plays[h] == 2):(plays[h] == 0 || plays[h] == 1 || plays[h] == 2 || plays[h] == 3)
-            if (indexes){ //checking vertically
+            //checking vertically:
+            indexes = (boardCells==3)? (plays[h] == 0 || plays[h] == 1 || plays[h] == 2):(plays[h] == 0 || plays[h] == 1 || plays[h] == 2 || plays[h] == 3) //only checks from the top row
+            if (indexes){
                 //The vertical check could not use the same iteration loop as the horizontal check, as the plays index is sorted by index. Therefore if the player played in (1,1), (2,1), and (1,2), the iterative loop would have only searched the horizontal loop first and met the break condition.
                 if(plays.includes(h+boardCells)){ //checks if the player has played in the cell below
                     if(plays.includes(h+(2*boardCells))){
                         console.log(game.turn,'wins vertically');
+                        game.state = state.WON;
+                        turnIndicator();
+                        return true;
+                    }
+                }
+            }
+            //checks diagonally top left --> lower right
+            if(plays[h] ==0){ //if play in the top left corner
+                if(plays.includes(h+(boardCells+1))){ //if includes one cell diagonally south east
+                    if(plays.includes(h+((2*boardCells)+2))){ //if includes the second cell diagonally south east
+                        console.log(game.turn,'wins diagonally');
+                        game.state = state.WON;
+                        turnIndicator();
+                        return true;
+                    }
+
+                }
+            }
+            //checks diagonally top right --> lover left
+            if(plays[h] == (boardCells-1)){ //if play in the top right corner
+                if(plays.includes(h+(boardCells-1))){//if includes one cell diagonally south west
+                    if(plays.includes(h+((2*boardCells)-2))){ //if includes the second cell diagonally south west
+                        console.log(game.turn,'wins diagonally');
                         game.state = state.WON;
                         turnIndicator();
                         return true;
