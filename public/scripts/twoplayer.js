@@ -144,15 +144,14 @@ canvas.addEventListener('click',function(event){
     let y = Math.round(event.clientY - canvas.getBoundingClientRect().top);
     let cellx = Math.floor((x-(borderWidth*(boardCells+1)))/cellWidth) + 1;
     let celly = Math.floor((y-(borderWidth*(boardCells+1)))/cellWidth) + 1;
-    //1 is added as the x&y coordinates start from one in the 'board array'
-    console.log(cellx,celly);
+    //1 is added as the x&y coordinates start from 1 in the 'board array'
     let index = board.findIndex(board => board.x == cellx && board.y == celly);
     switch(index){
         case -1:
             console.log("clicked outside board");
             break;
-    
         default:
+            console.log(cellx,celly);
             console.log("clicked on cell",index);
             addMark(index);
     } ;
