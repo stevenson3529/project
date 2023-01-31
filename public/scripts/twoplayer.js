@@ -102,7 +102,7 @@ function checkWin(){
             //checks diagonally top left --> lower right
             if(plays[h] ==0){ //if play in the top left corner
                 if(plays.includes(h+(boardCells+1))){ //if includes one cell diagonally south east
-                    if(plays.includes(h+((2*boardCells)+2))){ //if includes the second cell diagonally south east
+                    if(plays.includes((h+(2*boardCells))+2)){ //if includes the second cell diagonally south east
                         console.log(game.turn,'wins diagonally TL -> BR');
                         game.state = state.WON;
                         turnIndicator();
