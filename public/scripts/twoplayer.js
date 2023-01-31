@@ -108,10 +108,9 @@ function checkWin(){
                         turnIndicator();
                         return true;
                     }
-
                 }
             }
-            //checks diagonally top right --> lover left
+            //checks diagonally top right --> lower left
             if(plays[h] == (boardCells-1)){ //if play in the top right corner
                 if(plays.includes(h+(boardCells-1))){//if includes one cell diagonally south west
                     if(plays.includes(h+((2*boardCells)-2))){ //if includes the second cell diagonally south west
@@ -124,13 +123,13 @@ function checkWin(){
             }
         }
     }
+    game.moves++ //increments moves by one after checking game hasn't been won
     if(game.moves ==(boardCells**2)){ //if all moves have been played and there is no winner
         console.log("no winners");
         game.state = state.STOPPED;
         turnIndicator();
         return true;
     }
-    game.moves++ //increments moves by one after checking game hasn't been won
     return false;
 }
 
