@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 80; //Default HTTP Port
+const port = 3000; //Default HTTP Port 80 -- MUST be above 1024 for UNIX-based systems
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/menu.html'));
 app.listen(port, () => console.log(`listening on port ${port}`))
