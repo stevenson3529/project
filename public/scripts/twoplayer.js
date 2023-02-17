@@ -36,19 +36,28 @@ function createBoard(){
     }
     console.log(board)
     context.fillRect(0,0,boardSize,boardSize);
-    //top row
-    context.clearRect(borderWidth,borderWidth,cellWidth,cellWidth);
-    context.clearRect((cellWidth + (2*borderWidth)),borderWidth,cellWidth,cellWidth);
-    context.clearRect(((2*cellWidth) + (3*borderWidth)),borderWidth,cellWidth,cellWidth);
-    //middle row
-    context.clearRect(borderWidth,(cellWidth + (2*borderWidth)),cellWidth,cellWidth);
-    context.clearRect((cellWidth + (2*borderWidth)),(cellWidth + (2*borderWidth)),cellWidth,cellWidth);
-    context.clearRect(((2*cellWidth) + (3*borderWidth)),(cellWidth + (2*borderWidth)),cellWidth,cellWidth);
-    //bottom row
-    context.clearRect(borderWidth, ((2*cellWidth) + (3*borderWidth)),cellWidth,cellWidth);
-    context.clearRect((cellWidth + (2*borderWidth)),((2*cellWidth) + (3*borderWidth)),cellWidth,cellWidth);
-    context.clearRect(((2*cellWidth)+(3*borderWidth)),((2*cellWidth)+(3*borderWidth)),cellWidth,cellWidth);
-    turnIndicator();
+    for (let v=1;v<=boardCells;v++){
+        for(let h=0;h<boardCells;h++){
+            for(let a=1;a<=boardCells;a++){
+                for(let b=0;b<boardCells;b++){
+                    context.clearRect(((a*borderWidth)+(b*cellWidth)),((v*borderWidth)+(h*cellWidth)),cellWidth,cellWidth);
+                }
+            }
+        }
+    }
+    // //top row
+    // context.clearRect(borderWidth,borderWidth,cellWidth,cellWidth);
+    // context.clearRect((cellWidth + (2*borderWidth)),borderWidth,cellWidth,cellWidth);
+    // context.clearRect(((2*cellWidth) + (3*borderWidth)),borderWidth,cellWidth,cellWidth);
+    // //middle row
+    // context.clearRect(borderWidth,(cellWidth + (2*borderWidth)),cellWidth,cellWidth);
+    // context.clearRect((cellWidth + (2*borderWidth)),(cellWidth + (2*borderWidth)),cellWidth,cellWidth);
+    // context.clearRect(((2*cellWidth) + (3*borderWidth)),(cellWidth + (2*borderWidth)),cellWidth,cellWidth);
+    // //bottom row
+    // context.clearRect(borderWidth, ((2*cellWidth) + (3*borderWidth)),cellWidth,cellWidth);
+    // context.clearRect((cellWidth + (2*borderWidth)),((2*cellWidth) + (3*borderWidth)),cellWidth,cellWidth);
+    // context.clearRect(((2*cellWidth)+(3*borderWidth)),((2*cellWidth)+(3*borderWidth)),cellWidth,cellWidth);
+    // turnIndicator();
 };
 function turnIndicator(){
     context.clearRect((boardSize+25),25,(boardSize+100),100);
