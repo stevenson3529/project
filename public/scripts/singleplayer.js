@@ -1,7 +1,7 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const boardCells = 3; //value will be 3 for 3x3 grid
-const cellWidth = 85; //cell length/width
+const cellWidth = 125; //cell length/width
 const borderWidth = 5;
 const boardSize = (((boardCells +1)*borderWidth)+ (boardCells * cellWidth));
 
@@ -16,15 +16,15 @@ const state = {
 //player enums
 let player1 = {
     symbol: 'X',
-    name: 'Player 1'
+    name: 'Human'
 };
 const player2 = {
     symbol: 'O',
-    name: 'Player2'
+    name: 'Computer'
 };
 const game = {
     state: state.PLAYING,
-    turn: player1.symbol,
+    turn: player1,
     moves: 0
 }
 
@@ -59,9 +59,9 @@ function turnIndicator(){
     context.font = "24pt sans-serif";
     context.textAlign = "start"
     if(game.state == state.PLAYING){    
-        context.fillText("Turn: " + game.turn, boardSize + 30, 50)
+        context.fillText("Turn: " + game.turn.name, boardSize + 30, 50)
     }else if(game.state == state.WON){
-        context.fillText(game.turn + " wins", boardSize + 30, 50)
+        context.fillText(game.turn.name + " wins", boardSize + 30, 50)
     }else if(game.state == state.STOPPED){
         context.fillText("No winner", boardSize + 30, 50)
     }
@@ -151,18 +151,18 @@ function addMark(c){
             board[c].data = game.turn; // updates the board array with which player played
             context.font = "36pt sans-serif";
             context.textAlign = "center";
-            if(game.turn == player1.symbol){
-                context.fillText("X",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
+            if(game.turn == player1){
+                context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('X played in cell',c);
                 if(checkWin() == false){
-                    game.turn = player2.symbol;
+                    game.turn = player2;
                     turnIndicator();
                 }
-            } else if (game.turn == player2.symbol){
-                context.fillText("O",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
+            } else if (game.turn == player2){
+                context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('O played in cell',c);
                 if(!checkWin()){
-                    game.turn = player1.symbol;
+                    game.turn = player1;
                     turnIndicator();
                 }
             }
