@@ -1,6 +1,6 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const boardCells = 4; //value will be 3 for 3x3 grid
+const boardCells = 3; //value will be 3 for 3x3 grid
 const cellWidth = 85; //cell length/width
 const borderWidth = 5;
 const boardSize = (((boardCells +1)*borderWidth)+ (boardCells * cellWidth));
