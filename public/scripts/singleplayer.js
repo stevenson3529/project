@@ -9,6 +9,7 @@ let board = [];
 
 const state = {
     PLAYING: 'playing',
+    THINKING: 'thinking',
     STOPPED: 'stopped',
     WON: 'won',
 }
@@ -153,14 +154,14 @@ function addMark(c){
             context.textAlign = "center";
             if(game.turn == player1){
                 context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
-                console.log('X played in cell',c);
+                console.log('human played in cell',c);
                 if(checkWin() == false){
                     game.turn = player2;
                     turnIndicator();
                 }
             } else if (game.turn == player2){
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
-                console.log('O played in cell',c);
+                console.log('computer played in cell',c);
                 if(!checkWin()){
                     game.turn = player1;
                     turnIndicator();
@@ -173,6 +174,10 @@ function addMark(c){
 };
 
 createBoard();
+
+function miniMax(currentBoard, depth, humanIsMaxing){
+    
+}
 
 canvas.addEventListener('click',function(event){
     let x = Math.round(event.clientX - canvas.getBoundingClientRect().left);

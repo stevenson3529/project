@@ -1,7 +1,7 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const boardCells = 3; //value will be 3 for 3x3 grid
-const cellWidth = 85; //cell length/width
+const boardCells = 4; //value will be 3 for 3x3 grid
+const cellWidth = 100; //cell length/width
 const borderWidth = 5;
 const boardSize = (((boardCells +1)*borderWidth)+ (boardCells * cellWidth));
 
@@ -126,6 +126,28 @@ function checkWin(){
                     if(plays.includes(plays[h]+(2*boardCells)-2)){ //if includes the second cell diagonally south west
                         if(boardCells == 3 || plays.includes(plays[h]+(3*boardCells)-3)){
                             console.log(game.turn,'wins diagonally TR -> BL');
+                            game.state = state.WON;
+                            turnIndicator();
+                            return true;
+                        }
+                    }
+                }
+            }
+            if(boardCells==4){ //in 4x4, players can win by playing a square
+                if(plays.includes(plays[h] + 1)){
+                    if(plays.includes(plays[h] + boardCells)){
+                        if(plays.includes((plays[h] + boardCells)+1)){
+                            console.log(game.turn,'wins as square');
+                            game.state = state.WON;
+                            turnIndicator();
+                            return true;
+                        }
+                    }
+                }
+                if(plays.includes(plays[h] + (boardCells - 1))){ //check for a diamond pattern
+                    if(plays.includes(plays[h] + (boardCells + 1))){ //check cell south east
+                        if(plays.includes(plays[h] + (boardCells*2))){ //check cell 2 rows below
+                            console.log(game.turn,'wins as diamond');
                             game.state = state.WON;
                             turnIndicator();
                             return true;
