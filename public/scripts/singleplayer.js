@@ -134,6 +134,28 @@ function checkWin(){
                     }
                 }
             }
+            if(boardCells==4){ //in 4x4, players can win by playing a square
+                if(plays.includes(plays[h] + 1)){
+                    if(plays.includes(plays[h] + boardCells)){
+                        if(plays.includes((plays[h] + boardCells)+1)){
+                            console.log(game.turn,'wins as square');
+                            game.state = state.WON;
+                            turnIndicator();
+                            return true;
+                        }
+                    }
+                }
+                if(plays.includes(plays[h] + (boardCells - 1))){ //check for a diamond pattern
+                    if(plays.includes(plays[h] + (boardCells + 1))){ //check cell south east
+                        if(plays.includes(plays[h] + (boardCells*2))){ //check cell 2 rows below
+                            console.log(game.turn,'wins as diamond');
+                            game.state = state.WON;
+                            turnIndicator();
+                            return true;
+                        }
+                    }
+                }
+            }
         }
     }
     game.moves++ //increments moves by one after checking game hasn't been won
@@ -176,7 +198,7 @@ function addMark(c){
 createBoard();
 
 function miniMax(currentBoard, depth, humanIsMaxing){
-    
+
 }
 
 canvas.addEventListener('click',function(event){
