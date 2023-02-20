@@ -4,6 +4,7 @@ const boardCells = 3; //value will be 3 for 3x3 grid
 const cellWidth = 125; //cell length/width
 const borderWidth = 5;
 const boardSize = (((boardCells +1)*borderWidth)+ (boardCells * cellWidth));
+const difficulty = 0;
 
 let board = [];
 
@@ -91,9 +92,7 @@ function checkWin(){
                 if(plays[h+1]-plays[h]==1){ //checks the next index in the lists array is consecutive -- this is to check if the player has played in a row.
                     if(plays[h+2]-plays[h+1]==1){ //checks the next index in the lists array
                         if(boardCells == 3 || plays[h+3]-plays[h+2]==1){
-                            console.log(game.turn,'wins horizontally');
-                            game.state = state.WON;
-                            turnIndicator();
+                            currentPlayerWins("horizontally");
                             return true;
                         }
                 }
@@ -106,9 +105,7 @@ function checkWin(){
                 if(plays.includes(plays[h]+boardCells)){ //checks if the player has played in the cell below
                     if(plays.includes(plays[h]+(2*boardCells))){
                         if(boardCells == 3 || plays.includes(plays[h]+(3*boardCells))){
-                            console.log(game.turn,'wins vertically');
-                            game.state = state.WON;
-                            turnIndicator();
+                            currentPlayerWins("vertically");
                             return true;
                         }
                     }
@@ -119,9 +116,7 @@ function checkWin(){
                 if(plays.includes(plays[h]+(boardCells+1))){ //if includes one cell diagonally south east
                     if(plays.includes((plays[h]+(2*boardCells))+2)){ //if includes the second cell diagonally south east
                         if(boardCells == 3 || plays.includes((plays[h]+(3*boardCells))+3)){
-                            console.log(game.turn,'wins diagonally TL -> BR');
-                            game.state = state.WON;
-                            turnIndicator();
+                            currentPlayerWins("diagonally TL -> BR");
                             return true;
                         }
                     }
@@ -132,9 +127,7 @@ function checkWin(){
                 if(plays.includes(plays[h]+(boardCells-1))){//if includes one cell diagonally south west
                     if(plays.includes(plays[h]+(2*boardCells)-2)){ //if includes the second cell diagonally south west
                         if(boardCells == 3 || plays.includes(plays[h]+(3*boardCells)-3)){
-                            console.log(game.turn,'wins diagonally TR -> BL');
-                            game.state = state.WON;
-                            turnIndicator();
+                            currentPlayerWins("diagonally BL <- TR");
                             return true;
                         }
                     }
@@ -144,9 +137,7 @@ function checkWin(){
                 if(plays.includes(plays[h] + 1)){
                     if(plays.includes(plays[h] + boardCells)){
                         if(plays.includes((plays[h] + boardCells)+1)){
-                            console.log(game.turn,'wins as square');
-                            game.state = state.WON;
-                            turnIndicator();
+                            currentPlayerWins("as square");
                             return true;
                         }
                     }
@@ -154,9 +145,7 @@ function checkWin(){
                 if(plays.includes(plays[h] + (boardCells - 1))){ //check for a diamond pattern
                     if(plays.includes(plays[h] + (boardCells + 1))){ //check cell south east
                         if(plays.includes(plays[h] + (boardCells*2))){ //check cell 2 rows below
-                            console.log(game.turn,'wins as diamond');
-                            game.state = state.WON;
-                            turnIndicator();
+                            currentPlayerWins("as diamond");
                             return true;
                         }
                     }
@@ -173,6 +162,11 @@ function checkWin(){
     }
     return false;
 }
+function currentPlayerWins(method){
+    console.log(game.turn.symbol,"wins",method);
+    game.state = state.WON;
+    turnIndicator();
+}
 
 function addMark(c){
     if (game.state == state.PLAYING){ //only works when game is playing
@@ -187,8 +181,8 @@ function addMark(c){
                     game.turn = player2;
                     turnIndicator();
                     setTimeout(() => {
-                        compRandomMove();
-                      }, "750")
+                        minimax();
+                      }, "500")
                     
                 }
             } else if (game.turn == player2){
@@ -208,21 +202,19 @@ function addMark(c){
 
 createBoard();
 
-function compRandomMove(){
+
+function minimax(){
     let possibleMoves = []
     for(let m=0;m<board.length;m++){
         if(board[m].data === null){
             possibleMoves.push(m);
         }
     }
-    console.log(possibleMoves)
-    let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
-    console.log(move)
-    addMark(move);
-}
-
-function miniMax(currentBoard, depth, humanIsMaxing){
-
+    if(difficulty == 0){
+        let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
+        console.log(move)
+        addMark(move);
+    }
 }
 
 canvas.addEventListener('click',function(event){
