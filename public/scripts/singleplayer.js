@@ -75,11 +75,11 @@ function turnIndicator(){
     }
 }
 
-function checkWin(endGameWhenWon){
+function checkWin(endGameWhenWon,boardToCheck){
     //find all squares current player has played in
     let plays = [];
-    for (let g=0;g<board.length;g++){ //populates the array of cells the player has played in
-        if (board[g].data == game.turn){
+    for (let g=0;g<boardToCheck.length;g++){ //populates the array of cells the player has played in
+        if (boardToCheck[g].data == game.turn){
             plays.push(g);
         }
     }
@@ -189,18 +189,18 @@ function addMark(c){
             if(game.turn == player1){
                 context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('human played in cell',c);
-                if(checkWin(true) == false){
+                if(checkWin(true,board) == false){
                     game.turn = player2;
                     turnIndicator();
                     setTimeout(() => {
-                        minimax();
-                      }, "500")
+                        minimax(board);
+                      }, "300")
                     
                 }
             } else if (game.turn == player2){
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('computer played in cell',c);
-                if(!checkWin(true)){
+                if(!checkWin(true,board)){
                     game.turn = player1;
                     turnIndicator();
                     
@@ -215,17 +215,21 @@ function addMark(c){
 createBoard();
 
 
-function minimax(){
-    let possibleMoves = []
-    for(let m=0;m<board.length;m++){
-        if(board[m].data === null){
-            possibleMoves.push(m);
-        }
-    }
+function minimax(tempBoard){
     if(difficulty == 0){ //'easy' mode chooses a random move
-        let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
+        let moves = getPossibleMoves(tempBoard)
+        let move = moves[Math.floor(Math.random() * moves.length)]
         console.log(move)
         addMark(move);
+    }
+    function getPossibleMoves(getBoard){
+        let possibleMoves = []
+        for(let m=0;m<getBoard.length;m++){
+            if(getBoard[m].data === null){
+                possibleMoves.push(m);
+            }
+        };
+        return possibleMoves;
     }
 }
 
