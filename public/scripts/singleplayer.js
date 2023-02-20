@@ -9,7 +9,6 @@ let board = [];
 
 const state = {
     PLAYING: 'playing',
-    THINKING: 'thinking',
     STOPPED: 'stopped',
     WON: 'won',
 }
@@ -59,8 +58,15 @@ function turnIndicator(){
     context.clearRect((boardSize+25),25,(boardSize+100),100);
     context.font = "24pt sans-serif";
     context.textAlign = "start"
-    if(game.state == state.PLAYING){    
-        context.fillText("Turn: " + game.turn.name, boardSize + 30, 50)
+    if(game.state == state.PLAYING){
+        switch(game.turn){
+            case player1:
+                context.fillText("Turn: " + game.turn.name, boardSize + 30, 50);
+                break;
+            case player2:
+                context.fillText("Computer is thinking...", boardSize + 30, 50);
+                break;
+        }
     }else if(game.state == state.WON){
         context.fillText(game.turn.name + " wins", boardSize + 30, 50)
     }else if(game.state == state.STOPPED){
@@ -180,6 +186,10 @@ function addMark(c){
                 if(checkWin() == false){
                     game.turn = player2;
                     turnIndicator();
+                    setTimeout(() => {
+                        compRandomMove();
+                      }, "750")
+                    
                 }
             } else if (game.turn == player2){
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
@@ -187,6 +197,7 @@ function addMark(c){
                 if(!checkWin()){
                     game.turn = player1;
                     turnIndicator();
+                    
                 }
             }
         }else{ //when cell is not empty
@@ -196,6 +207,19 @@ function addMark(c){
 };
 
 createBoard();
+
+function compRandomMove(){
+    let possibleMoves = []
+    for(let m=0;m<board.length;m++){
+        if(board[m].data === null){
+            possibleMoves.push(m);
+        }
+    }
+    console.log(possibleMoves)
+    let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
+    console.log(move)
+    addMark(move);
+}
 
 function miniMax(currentBoard, depth, humanIsMaxing){
 
@@ -215,6 +239,8 @@ canvas.addEventListener('click',function(event){
         default:
             console.log(cellx,celly);
             console.log("clicked on cell",index);
-            addMark(index);
+            if(game.turn == player1){
+                addMark(index);
+            }
     } ;
 },false);
