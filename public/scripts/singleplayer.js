@@ -1,10 +1,10 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-const boardCells = 3; //value will be 3 for 3x3 grid
+const boardCells = 4; //value will be 3 for 3x3 grid
 const cellWidth = 125; //cell length/width
 const borderWidth = 5;
 const boardSize = (((boardCells +1)*borderWidth)+ (boardCells * cellWidth));
-const difficulty = 0;
+const difficulty = 1;
 
 let board = [];
 
@@ -197,7 +197,7 @@ function addMark(c){
                     game.turn = player2;
                     turnIndicator();
                     setTimeout(() => {
-                        minimax(board);
+                        minimax(board,player2);
                       }, "300")
                     
                 }
@@ -219,7 +219,7 @@ function addMark(c){
 createBoard();
 
 
-function minimax(tempBoard){
+function minimax(tempBoard,tempPlayer){
     if(difficulty == 0){ //'easy' mode chooses a random move
         let moves = getPossibleMoves(tempBoard)
         let move = moves[Math.floor(Math.random() * moves.length)]
@@ -234,7 +234,23 @@ function minimax(tempBoard){
     } else if (checkWin(false,tempBoard,player1) == "none"){ //checks if the game ends with no winners
         return {score:0};
     }
-
+    let movesConsidering = [];
+    let thisPossMoves = getPossibleMoves(tempBoard);
+    for (let j=0;j<thisPossMoves.length;j++){
+        let thisMove = {};
+        thisMove.index = thisPossMoves[j];
+        tempBoard[thisPossMoves[j]] = tempPlayer;
+        if(tempPlayer == player2){
+            let nextMove = minimax(tempBoard,player1);
+            thisMove.score = nextMove.score;
+        }else if(tempPlayer == player1){
+            let nextMove = minimax(tempBoard,player2);
+            thisMove.score = nextMove.score;
+        }
+        tempBoard[thisPossMoves[j]] = thisMove.index;
+        movesConsidering.push(thisMove);
+    }
+    console.log(thisPossMoves,tempBoard)
 
     function getPossibleMoves(getBoard){
         let possibleMoves = []
