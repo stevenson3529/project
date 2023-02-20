@@ -75,7 +75,7 @@ function turnIndicator(){
     }
 }
 
-function checkWin(){
+function checkWin(endGameWhenWon){
     //find all squares current player has played in
     let plays = [];
     for (let g=0;g<board.length;g++){ //populates the array of cells the player has played in
@@ -92,7 +92,9 @@ function checkWin(){
                 if(plays[h+1]-plays[h]==1){ //checks the next index in the lists array is consecutive -- this is to check if the player has played in a row.
                     if(plays[h+2]-plays[h+1]==1){ //checks the next index in the lists array
                         if(boardCells == 3 || plays[h+3]-plays[h+2]==1){
-                            currentPlayerWins("horizontally");
+                            if(endGameWhenWon){
+                                currentPlayerWins("horizontally");
+                            }
                             return true;
                         }
                 }
@@ -105,7 +107,9 @@ function checkWin(){
                 if(plays.includes(plays[h]+boardCells)){ //checks if the player has played in the cell below
                     if(plays.includes(plays[h]+(2*boardCells))){
                         if(boardCells == 3 || plays.includes(plays[h]+(3*boardCells))){
-                            currentPlayerWins("vertically");
+                            if(endGameWhenWon){
+                                currentPlayerWins("vertically");
+                            }
                             return true;
                         }
                     }
@@ -116,7 +120,9 @@ function checkWin(){
                 if(plays.includes(plays[h]+(boardCells+1))){ //if includes one cell diagonally south east
                     if(plays.includes((plays[h]+(2*boardCells))+2)){ //if includes the second cell diagonally south east
                         if(boardCells == 3 || plays.includes((plays[h]+(3*boardCells))+3)){
-                            currentPlayerWins("diagonally TL -> BR");
+                            if(endGameWhenWon){
+                                currentPlayerWins("diagonally TL -> BR");
+                            }
                             return true;
                         }
                     }
@@ -127,7 +133,9 @@ function checkWin(){
                 if(plays.includes(plays[h]+(boardCells-1))){//if includes one cell diagonally south west
                     if(plays.includes(plays[h]+(2*boardCells)-2)){ //if includes the second cell diagonally south west
                         if(boardCells == 3 || plays.includes(plays[h]+(3*boardCells)-3)){
-                            currentPlayerWins("diagonally BL <- TR");
+                            if(endGameWhenWon){
+                                currentPlayerWins("BL <- TR");
+                            }
                             return true;
                         }
                     }
@@ -137,7 +145,9 @@ function checkWin(){
                 if(plays.includes(plays[h] + 1)){
                     if(plays.includes(plays[h] + boardCells)){
                         if(plays.includes((plays[h] + boardCells)+1)){
-                            currentPlayerWins("as square");
+                            if(endGameWhenWon){
+                                currentPlayerWins("as square");
+                            }
                             return true;
                         }
                     }
@@ -145,7 +155,9 @@ function checkWin(){
                 if(plays.includes(plays[h] + (boardCells - 1))){ //check for a diamond pattern
                     if(plays.includes(plays[h] + (boardCells + 1))){ //check cell south east
                         if(plays.includes(plays[h] + (boardCells*2))){ //check cell 2 rows below
-                            currentPlayerWins("as diamond");
+                            if(endGameWhenWon){
+                                currentPlayerWins("as diamond");
+                            }
                             return true;
                         }
                     }
@@ -177,7 +189,7 @@ function addMark(c){
             if(game.turn == player1){
                 context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('human played in cell',c);
-                if(checkWin() == false){
+                if(checkWin(true) == false){
                     game.turn = player2;
                     turnIndicator();
                     setTimeout(() => {
@@ -188,7 +200,7 @@ function addMark(c){
             } else if (game.turn == player2){
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('computer played in cell',c);
-                if(!checkWin()){
+                if(!checkWin(true)){
                     game.turn = player1;
                     turnIndicator();
                     
@@ -210,7 +222,7 @@ function minimax(){
             possibleMoves.push(m);
         }
     }
-    if(difficulty == 0){
+    if(difficulty == 0){ //'easy' mode chooses a random move
         let move = possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
         console.log(move)
         addMark(move);
