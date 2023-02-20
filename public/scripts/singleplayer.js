@@ -75,11 +75,11 @@ function turnIndicator(){
     }
 }
 
-function checkWin(endGameWhenWon,boardToCheck){
+function checkWin(endGameWhenWon,boardToCheck,playerToCheck){
     //find all squares current player has played in
     let plays = [];
     for (let g=0;g<boardToCheck.length;g++){ //populates the array of cells the player has played in
-        if (boardToCheck[g].data == game.turn){
+        if (boardToCheck[g].data == playerToCheck){
             plays.push(g);
         }
     }
@@ -167,10 +167,14 @@ function checkWin(endGameWhenWon,boardToCheck){
     }
     game.moves++ //increments moves by one after checking game hasn't been won
     if(game.moves ==(boardCells**2)){ //if all moves have been played and there is no winner
-        console.log("no winners");
-        game.state = state.STOPPED;
-        turnIndicator();
-        return true;
+        if(endGameWhenWon){
+            console.log("no winners");
+            game.state = state.STOPPED;
+            turnIndicator();
+            return true;
+        }
+        return "none";
+        
     }
     return false;
 }
@@ -189,7 +193,7 @@ function addMark(c){
             if(game.turn == player1){
                 context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('human played in cell',c);
-                if(checkWin(true,board) == false){
+                if(checkWin(true,board,game.turn) == false){
                     game.turn = player2;
                     turnIndicator();
                     setTimeout(() => {
@@ -200,7 +204,7 @@ function addMark(c){
             } else if (game.turn == player2){
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('computer played in cell',c);
-                if(!checkWin(true,board)){
+                if(!checkWin(true,board,game.turn)){
                     game.turn = player1;
                     turnIndicator();
                     
@@ -221,7 +225,17 @@ function minimax(tempBoard){
         let move = moves[Math.floor(Math.random() * moves.length)]
         console.log(move)
         addMark(move);
+        return false;
     }
+    if (checkWin(false,tempBoard,player1)){ //checks if the human wins
+        return {score:-10};
+    } else if (checkWin(false,tempBoard,player2)){ //checks if the computer wins
+        return {score:10};
+    } else if (checkWin(false,tempBoard,player1) == "none"){ //checks if the game ends with no winners
+        return {score:0};
+    }
+
+
     function getPossibleMoves(getBoard){
         let possibleMoves = []
         for(let m=0;m<getBoard.length;m++){
