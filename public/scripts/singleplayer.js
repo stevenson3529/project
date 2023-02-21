@@ -199,7 +199,6 @@ function addMark(c){
                     setTimeout(() => {
                         minimax(board,player2);
                       }, "300")
-                    
                 }
             } else if (game.turn == player2){
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
@@ -236,10 +235,10 @@ function minimax(tempBoard,tempPlayer){
     }
     let movesConsidering = [];
     let thisPossMoves = getPossibleMoves(tempBoard);
-    for (let j=0;j<thisPossMoves.length;j++){
+    for (let j=0;j<=thisPossMoves.length;j++){
         let thisMove = {};
         thisMove.index = thisPossMoves[j];
-        tempBoard[thisPossMoves[j]] = tempPlayer;
+        tempBoard[thisPossMoves[j]].data = tempPlayer.symbol;
         if(tempPlayer == player2){
             let nextMove = minimax(tempBoard,player1);
             thisMove.score = nextMove.score;
@@ -247,7 +246,7 @@ function minimax(tempBoard,tempPlayer){
             let nextMove = minimax(tempBoard,player2);
             thisMove.score = nextMove.score;
         }
-        tempBoard[thisPossMoves[j]] = thisMove.index;
+        console.log(tempBoard);
         movesConsidering.push(thisMove);
     }
     console.log(thisPossMoves,tempBoard)
