@@ -38,11 +38,11 @@ function createBoard() {
     for (let y=1;y <=boardCells;y++) {
         for (let x=1;x<=boardCells;x++) {
             // Add a new object to the board array for each cell with its x and y coordinates and null data
-            board.push({x:x,y:y,data:null});
+            board.push({x:x, y:y, data:null});
         }
     }
     // Log the current state of the board array to the console
-    console.log(board)
+    console.log("board:",board)
     // draws a rectangle onto the cnavas with dimensions 'boardSize'
     context.fillRect(0,0,boardSize,boardSize);
 
@@ -81,7 +81,7 @@ function turnIndicator() {
     if (game.state == state.PLAYING) {
         switch(game.turn) {
             case player1:
-                context.fillText("Turn: " + game.turn.name, boardSize + 30, 50);
+                context.fillText("Turn:" + game.turn.name, boardSize + 30, 50);
                 break;
             case player2:
                 context.fillText("Computer is thinking...", boardSize + 30, 50);
@@ -104,7 +104,7 @@ function checkWin(endGameWhenWon,boardToCheck,playerToCheck) {
             plays.push(g);
         }
     }
-    console.log(plays); // outputs plays array
+    //console.log("checkwin -plays:", plays); // outputs plays array
 
     // loops through different directions to find winning conditions:
     for (let h=0;h<=plays.length;h++) { // for each item in the list of plays...
@@ -118,7 +118,7 @@ function checkWin(endGameWhenWon,boardToCheck,playerToCheck) {
                     if(plays[h+2]-plays[h+1]==1) { // checks the next index in the lists array
                         if(boardCells == 3 || plays[h+3]-plays[h+2]==1) { // if the board size is 3x3 and the player has played consecutively in a row for four cells, or if the board size is 4x4 and the player has played consecutively in a row for four cells
                             if(endGameWhenWon) {
-                                currentPlayerWins("horizontally"); // announce that the current player has won horizontally
+                                currentPlayerWins("checkwin -won horizontally"); // announce that the current player has won horizontally
                             }
                             return true; // return true to indicate that the game has ended
                         }
@@ -216,7 +216,7 @@ function checkWin(endGameWhenWon,boardToCheck,playerToCheck) {
 
 // outputs & displays which and how the player one
 function currentPlayerWins(method) { // 'method' indicates how the player won, i.e. HORIZONTALLY, VERTICALLY, DIAGONALLY
-    console.log(game.turn.symbol, "wins", method); // outputs which player won and how
+    console.log(game.turn.symbol, " - wins - ", method); // outputs which player won and how
     game.state = state.WON; // updates the game state
     turnIndicator(); // updates the on screen text to show who has won
 }
@@ -238,7 +238,7 @@ function addMark(c) {
                 // sets the fillText to the playerX.symbol in shmexy format
                 context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth)) - (cellWidth/2), (board[c].y * (borderWidth + cellWidth)) - (cellWidth/2));
                 
-                console.log('human played in cell',c); // outputs the play to console
+                console.log('human played in cell:',c); // outputs the play to console
 
                 // checks if game has ended
                 if(checkWin(true, board, game.turn) == false) {
@@ -251,10 +251,12 @@ function addMark(c) {
 
             // PLAYER 2'S TURN
             } else if (game.turn == player2) {
+                let result = minimax2(board, player2, 0); // Calculate the best move using the minimax algorithm
+                board[result.index].data = player2.symbol; // Make the move on the board
                 // sets the fillText to the playerX.symbol in shmexy format
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 
-                console.log('computer played in cell',c); // outputs the play to console
+                console.log('computer played in cell: ',c); // outputs the play to console
                 // checks if game has ended
                 if(!checkWin(true,board,game.turn)) {
                     game.turn = player1; // player 2's turn
@@ -264,13 +266,76 @@ function addMark(c) {
             }
 
         } else { //when cell is not empty
-            console.log('cell already played')
+            console.error('cell already played')
         }
     }
 };
 createBoard();
 
-function minimax(tempBoard,tempPlayer) {
+// This function returns an object containing the index of the best move to make, and its corresponding score
+function minimax2(board, player, depth) {
+    // Check if the current board state is a terminal state (i.e. someone has won or the board is full)
+    if (checkWin(true, board, player1)) {
+      return {score: -10 + depth}; // If player 1 wins, return a score of -10 (plus the current depth)
+    } else if (checkWin(true, board, player2)) {
+      return {score: 10 - depth}; // If player 2 wins, return a score of 10 (minus the current depth)
+    } else if (getPossibleMoves(board).length === 0) {
+      return {score: 0}; // If the board is full and nobody has won, return a score of 0
+    }
+  
+    // If we haven't reached a terminal state, recursively call the minimax function for each possible move
+    let moves = [];
+    let possibleMoves = getPossibleMoves(board);
+    for (let i = 0; i < possibleMoves.length; i++) {
+      let move = {};
+      move.index = possibleMoves[i];
+      board[possibleMoves[i]].data = player.symbol; // Make the move
+      if (player == player2) {
+        let result = minimax(board, player1, depth + 1);
+        move.score = result.score;
+      } else {
+        let result = minimax(board, player2, depth + 1);
+        move.score = result.score;
+      }
+      board[possibleMoves[i]].data = null; // Undo the move
+      moves.push(move);
+    }
+  
+    // If it's player 2's turn, find the move with the highest score
+    if (player == player2) {
+      let bestMove = null;
+      let bestScore = -Infinity;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score > bestScore) {
+          bestScore = moves[i].score;
+          bestMove = moves[i].index;
+        }
+      }
+      return {score: bestScore, index: bestMove};
+    } 
+    // If it's player 1's turn, find the move with the lowest score
+    else {
+      let bestMove = null;
+      let bestScore = Infinity;
+      for (let i = 0; i < moves.length; i++) {
+        if (moves[i].score < bestScore) {
+          bestScore = moves[i].score;
+          bestMove = moves[i].index;
+        }
+      }
+      return {score: bestScore, index: bestMove};
+    }
+  }
+  
+
+
+
+
+
+
+let iter = 0;
+function minimax(reboard,player) {
+
     // DIFFICULTY: 0, 'easy'
     // 'easy' mode chooses a random move
     if(difficulty == 0) {
@@ -278,16 +343,19 @@ function minimax(tempBoard,tempPlayer) {
         let move = moves[Math.floor(Math.random() * moves.length)]
         console.log(move)
         addMark(move);
-        return {score : 0};
+        return false;
     }
 
+    iter++;
+    let array = getPossibleMoves(reboard); // gets an array of all possible moves
+    
     // DIFFICULTY: 1, 'normal'
     // 'normal' mode uses the minimax algorithm
-    if (checkWin(false, tempBoard, player1)) { //checks if the human wins
-        return {score: -10};
-    } else if (checkWin(false, tempBoard, player2)) { //checks if the computer wins
+    if (checkWin(false, reboard, player1)) { //checks if the human wins
+       return {score: -10};
+    } else if (checkWin(false, reboard, player2)) { //checks if the computer wins
         return {score: 10};
-    } else if (checkWin(false, tempBoard, player1) == "none") { //checks if the game ends with no winners
+    } else if (array.length === 0) { //checks if the game ends with no winners
         return {score: 0};
     }
 
@@ -297,42 +365,69 @@ function minimax(tempBoard,tempPlayer) {
      * calculates the minimax score for the next move, 
      * and stores the score and index of each move in an array.
      */
-
-    let movesConsidering = []; // declare an empty array holding indexes of potential moves
-    let thisPossMoves = getPossibleMoves(tempBoard); // gets an array of all possible moves
-    
+    let moves = []; // declare an empty array holding indexes of potential moves
     // loop through all possible moves
-    for (let j=0;j<thisPossMoves.length;j++) {
-        let thisMove = {}; // create an empty object to hold information about this move
-        thisMove.index = thisPossMoves[j]; // set the index of this move in the board array
-        tempBoard[thisPossMoves[j]].data = tempPlayer.symbol; // make the move on the temporary board
-        if(tempPlayer == player2) { // if it's player 2's turn
-            let nextMove = minimax(tempBoard,player1); // calculate the minimax score for the next move (player 1's turn)
-            if (nextMove) { // check if nextMove is defined
-                thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
+    for (let i = 0; i < array.length; i++) {
+        let move = {}; // create an empty object to hold information about this move
+        move.index = reboard[array[i]]; // set the index of this move in the board array
+        reboard[array[i]].data = player.symbol; // make the move on the temporary board
+
+        if(player == player2) { // if it's player 2's turn
+            let nextMove = minimax(reboard,player1); // calculate the minimax score for the next move (player 1's turn)
+            move.score = nextMove.score; // set the score for this move to be the score of the next move
+        } else { // if it's player 1's turn
+            let nextMove = minimax(reboard,player2); // calculate the minimax score for the next move (player 2's turn)
+            move.score = nextMove.score; // set the score for this move to be the score of the next move
+        }
+        console.log("minimax -move: ",i ," -temp board:", reboard); // log the temporary board to the console (for debugging purposes)
+        reboard[array[i]].data = move.index; // reset the board to empty for the next iteration
+        moves.push(move); // add this move to the array of potential moves
+    }
+    console.log("minimax -iteration:",iter, " -possible moves:", array, " -temp board:", reboard) // log the list of possible moves and the final state of the board (for debugging purposes)
+
+    var bestMove;
+    if (player == player2) {
+        var bestScore = -100000;
+        for (let i = 0; i < moves.length; i++) {
+            if (moves[i].score > bestScore) {
+                bestScore = moves[i].score;
+                bestMove = i;
             }
-        }else if(tempPlayer == player1) { // if it's player 1's turn
-            let nextMove = minimax(tempBoard,player2); // calculate the minimax score for the next move (player 2's turn)
-            if (nextMove) { // check if nextMove is defined
-                thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
+            if (bestScore === 10) { // exit minimax if the best score is found
+                break;
             }
         }
-
-        console.log(tempBoard); // log the temporary board to the console (for debugging purposes)
-        movesConsidering.push(thisMove); // add this move to the array of potential moves
-    }
-    console.log(thisPossMoves, tempBoard) // log the list of possible moves and the final state of the board (for debugging purposes)
-
-    function getPossibleMoves(getBoard) { // define a function that takes a game board as input
-        let possibleMoves = [] // create an empty array to hold the possible moves
-        for(let m=0;m<getBoard.length;m++) { // loop through each square on the board
-            if(getBoard[m].data === null) { // if the square is empty
-                possibleMoves.push(m); // add the index of the square to the array of possible moves
+    } else {
+        var bestScore = 100000;
+        for (let i = 0; i < moves.length; i++) {
+            if (moves[i].score < bestScore) {
+                bestScore = moves[i].score;
+                bestMove = i;
             }
-        };
-        return possibleMoves; // return the array of possible moves
+            if (bestScore === -10) { // exit minimax if the best score is found
+                break;
+            }
+        }
     }
+    let index = (moves[bestMove].index.y - 1) * 3 + (moves[bestMove].index.x - 1)
+
+    console.warn("best move: (", moves[bestMove].index.x,",",moves[bestMove].index.y, ")");
+    console.warn("best move:", index);
+    board[index].data = null;
     
+    addMark(index);
+    return false;
+
+}
+
+function getPossibleMoves(possMovesBoard) { // define a function that takes a game board as input
+    let possibleMoves = [] // create an empty array to hold the possible moves
+    for(let m=0; m<possMovesBoard.length; m++) { // loop through each square on the board
+        if(possMovesBoard[m].data === null) { // if the square is empty
+            possibleMoves.push(m); // add the index of the square to the array of possible moves
+        }
+    };
+    return possibleMoves; // return the array of possible moves
 }
 
 // Adds an event listener to the canvas that listens for clicks
@@ -352,11 +447,11 @@ canvas.addEventListener('click',function(event) {
     // A switch statement that executes different code based on the value of 'index'
     switch(index) {
         case -1:
-            console.log("clicked outside board");
+            console.error("clicked outside board");
             break;
         default:
-            console.log(cellx,celly);
-            console.log("clicked on cell",index);
+            console.warn("clicked on cell: (", cellx,",",celly, ")");
+            console.warn("clicked on cell:", index);
 
             // If it's the human player's turn, call the addMark function with the clicked cell's index as an argument
             if(game.turn == player1) {
