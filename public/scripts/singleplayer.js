@@ -278,16 +278,16 @@ function minimax(tempBoard,tempPlayer) {
         let move = moves[Math.floor(Math.random() * moves.length)]
         console.log(move)
         addMark(move);
-        return false;
+        return {score : 0};
     }
 
     // DIFFICULTY: 1, 'normal'
     // 'normal' mode uses the minimax algorithm
     if (checkWin(false, tempBoard, player1)) { //checks if the human wins
         return {score: -10};
-    } else if (checkWin(false,tempBoard,player2)) { //checks if the computer wins
+    } else if (checkWin(false, tempBoard, player2)) { //checks if the computer wins
         return {score: 10};
-    } else if (checkWin(false,tempBoard,player1) == "none") { //checks if the game ends with no winners
+    } else if (checkWin(false, tempBoard, player1) == "none") { //checks if the game ends with no winners
         return {score: 0};
     }
 
@@ -302,16 +302,20 @@ function minimax(tempBoard,tempPlayer) {
     let thisPossMoves = getPossibleMoves(tempBoard); // gets an array of all possible moves
     
     // loop through all possible moves
-    for (let j=0;j<=thisPossMoves.length;j++) {
+    for (let j=0;j<thisPossMoves.length;j++) {
         let thisMove = {}; // create an empty object to hold information about this move
         thisMove.index = thisPossMoves[j]; // set the index of this move in the board array
         tempBoard[thisPossMoves[j]].data = tempPlayer.symbol; // make the move on the temporary board
         if(tempPlayer == player2) { // if it's player 2's turn
             let nextMove = minimax(tempBoard,player1); // calculate the minimax score for the next move (player 1's turn)
-            thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
+            if (nextMove) { // check if nextMove is defined
+                thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
+            }
         }else if(tempPlayer == player1) { // if it's player 1's turn
             let nextMove = minimax(tempBoard,player2); // calculate the minimax score for the next move (player 2's turn)
-            thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
+            if (nextMove) { // check if nextMove is defined
+                thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
+            }
         }
 
         console.log(tempBoard); // log the temporary board to the console (for debugging purposes)
@@ -328,6 +332,7 @@ function minimax(tempBoard,tempPlayer) {
         };
         return possibleMoves; // return the array of possible moves
     }
+    
 }
 
 // Adds an event listener to the canvas that listens for clicks
