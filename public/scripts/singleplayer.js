@@ -1,21 +1,23 @@
-const canvas = document.getElementById('canvas');
-const context = canvas.getContext('2d');
-const boardCells = 4; //value will be 3 for 3x3 grid
-const cellWidth = 125; //cell length/width
-const borderWidth = 5;
+const canvas = document.getElementById('canvas'); // Get the canvas element from the DOM
+const context = canvas.getContext('2d'); // Get the 2D rendering context of the canvas
+const boardCells = 3; // Set the number of cells in each row and column of the game board
+const cellWidth = 125; // Set the width and height of each individual cell on the game board
+const borderWidth = 5; // Set the width of the border around each cell
+// Calculate the size of the game board based on the number of cells and cell dimensions
 const boardSize = (((boardCells +1)*borderWidth)+ (boardCells * cellWidth));
-const difficulty = 1;
+const difficulty = 1; // Set the game difficulty
 
-let board = [];
+let board = []; // Initialize the game board as an empty array
 
+// Define game states as constants for easy reference
 const state = {
     PLAYING: 'playing',
     STOPPED: 'stopped',
     WON: 'won',
 }
 
-//player enums
-let player1 = {
+// Define player objects with symbols and names
+const player1 = {
     symbol: 'X',
     name: 'Human'
 };
@@ -23,91 +25,115 @@ const player2 = {
     symbol: 'O',
     name: 'Computer'
 };
+
+// Initialize the game object with the current state, active player, and move count
 const game = {
     state: state.PLAYING,
     turn: player1,
     moves: 0
 }
 
-function createBoard(){
-    for (let y=1;y <=boardCells;y++){
-        for (let x=1;x<=boardCells;x++){
-            board.push({x:x,y:y,data:null});
+// This function creates the game board by initializing the board array with empty data for each cell
+function createBoard() {
+    for (let y=1;y <=boardCells;y++) {
+        for (let x=1;x<=boardCells;x++) {
+            // Add a new object to the board array for each cell with its x and y coordinates and null data
+            board.push({x:x, y:y, data:null});
         }
     }
-    console.log(board)
+    // Log the current state of the board array to the console
+    console.log("board:",board)
+    // draws a rectangle onto the cnavas with dimensions 'boardSize'
     context.fillRect(0,0,boardSize,boardSize);
-    function drawSquares(){
+
+    // This function is nested inside the createBoard() function and is used to draw individual cells on the board
+    function drawSquares() {
         let v=null,
         h=null,
         a=null,
         b=null
-        for(let i=0; i<=((boardCells**2)-1); i++){ //loops for the number of total cells
+
+        // Loop through each cell on the board and calculate its position on the canvas
+        for(let i=0; i<=((boardCells**2)-1); i++) { //loops for the number of total cells
             const iModBC = i%boardCells
             const iDivBC = Math.floor(i/boardCells)
             a = iModBC +1;
             b = iModBC;
             v = iDivBC +1;
             h = iDivBC;
+
+            // Clear the canvas at the calculated position to draw a cell
             context.clearRect(((a*borderWidth)+(b*cellWidth)),((v*borderWidth)+(h*cellWidth)),cellWidth,cellWidth)
         }
     }
-    drawSquares();
-    turnIndicator();
+    drawSquares(); // Call the drawSquares() function to draw all cells on the board
+    turnIndicator(); // Call the turnIndicator() function to update the display for the active player's turn
 };
-function turnIndicator(){
+
+// This function updates the display for the active player's turn
+function turnIndicator() {
+    // Clear the canvas area reserved for the turn indicator
     context.clearRect((boardSize+25),25,(boardSize+100),100);
     context.font = "24pt sans-serif";
     context.textAlign = "start"
-    if(game.state == state.PLAYING){
-        switch(game.turn){
+
+    // Check the current game state and display appropriate text for the active player's turn
+    if (game.state == state.PLAYING) {
+        switch(game.turn) {
             case player1:
-                context.fillText("Turn: " + game.turn.name, boardSize + 30, 50);
+                context.fillText("Turn:" + game.turn.name, boardSize + 30, 50);
                 break;
             case player2:
                 context.fillText("Computer is thinking...", boardSize + 30, 50);
                 break;
         }
-    }else if(game.state == state.WON){
+    } else if (game.state == state.WON) {
         context.fillText(game.turn.name + " wins", boardSize + 30, 50)
-    }else if(game.state == state.STOPPED){
+    } else if (game.state == state.STOPPED) {
         context.fillText("No winner", boardSize + 30, 50)
     }
 }
 
-function checkWin(endGameWhenWon,boardToCheck,playerToCheck){
-    //find all squares current player has played in
-    let plays = [];
-    for (let g=0;g<boardToCheck.length;g++){ //populates the array of cells the player has played in
-        if (boardToCheck[g].data == playerToCheck){
+function checkWin(endGameWhenWon,boardToCheck,playerToCheck) {
+    // find all squares current player has played in
+    let plays = []; // initialise an empty array to hold the indexes of all the cells a player has played in
+
+    // checks through each cell and pushes its index to plays[] if it has been played in
+    for (let g=0;g<boardToCheck.length;g++) {
+        if (boardToCheck[g].data == playerToCheck) {
             plays.push(g);
         }
     }
-    console.log(plays);
-    for (let h=0;h<=plays.length;h++){ //for each item in the list of plays...
-        for(let d=0;d<boardCells;d++){
+    //console.log("checkwin -plays:", plays); // outputs plays array
+
+    // loops through different directions to find winning conditions:
+    for (let h=0;h<=plays.length;h++) { // for each item in the list of plays...
+        for(let d=0;d<boardCells;d++) { // iterate over each cell on the board
+
             //checking horizontally:
-            let indexes = (boardCells==3)? (plays[h] == 0|| plays[h]==3|| plays[h] == 6):(plays[h] == 0|| plays[h]==4|| plays[h] == 8|| plays[h] == 12) //only checks from the start of each row
-            if (indexes){
-                if(plays[h+1]-plays[h]==1){ //checks the next index in the lists array is consecutive -- this is to check if the player has played in a row.
-                    if(plays[h+2]-plays[h+1]==1){ //checks the next index in the lists array
-                        if(boardCells == 3 || plays[h+3]-plays[h+2]==1){
-                            if(endGameWhenWon){
-                                currentPlayerWins("horizontally");
+            let indexes = (boardCells==3)? (plays[h] == 0|| plays[h] == 3|| plays[h] == 6) : (plays[h] == 0|| plays[h] == 4|| plays[h] == 8|| plays[h] == 12) //only checks from the start of each row
+            
+            if (indexes) {
+                if(plays[h+1]-plays[h]==1) { // checks the next index in the lists array is consecutive -- this is to check if the player has played in a row.
+                    if(plays[h+2]-plays[h+1]==1) { // checks the next index in the lists array
+                        if(boardCells == 3 || plays[h+3]-plays[h+2]==1) { // if the board size is 3x3 and the player has played consecutively in a row for four cells, or if the board size is 4x4 and the player has played consecutively in a row for four cells
+                            if(endGameWhenWon) {
+                                currentPlayerWins("checkwin -won horizontally"); // announce that the current player has won horizontally
                             }
-                            return true;
+                            return true; // return true to indicate that the game has ended
                         }
                 }
                 }
             }
+
             //checking vertically:
             indexes = (boardCells==3)? (plays[h] == 0 || plays[h] == 1 || plays[h] == 2):(plays[h] == 0 || plays[h] == 1 || plays[h] == 2 || plays[h] == 3) //only checks from the top row
-            if (indexes){
+            if (indexes) {
                 //The vertical check could not use the same iteration loop as the horizontal check, as the plays index is sorted by index. Therefore if the player played in (1,1), (2,1), and (1,2), the iterative loop would have only searched the horizontal loop first and met the break condition.
-                if(plays.includes(plays[h]+boardCells)){ //checks if the player has played in the cell below
-                    if(plays.includes(plays[h]+(2*boardCells))){
-                        if(boardCells == 3 || plays.includes(plays[h]+(3*boardCells))){
-                            if(endGameWhenWon){
+                if(plays.includes(plays[h]+boardCells)) { //checks if the player has played in the cell below
+                    if(plays.includes(plays[h]+(2*boardCells))) {
+                        if(boardCells == 3 || plays.includes(plays[h]+(3*boardCells))) {
+                            if(endGameWhenWon) {
                                 currentPlayerWins("vertically");
                             }
                             return true;
@@ -115,12 +141,13 @@ function checkWin(endGameWhenWon,boardToCheck,playerToCheck){
                     }
                 }
             }
+
             //checks diagonally top left --> lower right
-            if(plays[h] ==0){ //if play in the top left corner
-                if(plays.includes(plays[h]+(boardCells+1))){ //if includes one cell diagonally south east
-                    if(plays.includes((plays[h]+(2*boardCells))+2)){ //if includes the second cell diagonally south east
-                        if(boardCells == 3 || plays.includes((plays[h]+(3*boardCells))+3)){
-                            if(endGameWhenWon){
+            if(plays[h] ==0) { //if play in the top left corner
+                if(plays.includes(plays[h] + (boardCells+1))) { //if includes one cell diagonally south east
+                    if(plays.includes((plays[h] + (2*boardCells)) + 2)) { //if includes the second cell diagonally south east
+                        if(boardCells == 3 || plays.includes((plays[h] + (3*boardCells)) + 3)) {
+                            if(endGameWhenWon) {
                                 currentPlayerWins("diagonally TL -> BR");
                             }
                             return true;
@@ -128,12 +155,13 @@ function checkWin(endGameWhenWon,boardToCheck,playerToCheck){
                     }
                 }
             }
+
             //checks diagonally top right --> lower left
-            if(plays[h] == (boardCells-1)){ //if play in the top right corner
-                if(plays.includes(plays[h]+(boardCells-1))){//if includes one cell diagonally south west
-                    if(plays.includes(plays[h]+(2*boardCells)-2)){ //if includes the second cell diagonally south west
-                        if(boardCells == 3 || plays.includes(plays[h]+(3*boardCells)-3)){
-                            if(endGameWhenWon){
+            if(plays[h] == (boardCells-1)) { //if play in the top right corner
+                if(plays.includes(plays[h] + (boardCells-1))) {//if includes one cell diagonally south west
+                    if(plays.includes(plays[h] + (2*boardCells)-2)) { //if includes the second cell diagonally south west
+                        if(boardCells == 3 || plays.includes(plays[h] + (3*boardCells)-3)) {
+                            if(endGameWhenWon) {
                                 currentPlayerWins("BL <- TR");
                             }
                             return true;
@@ -141,21 +169,23 @@ function checkWin(endGameWhenWon,boardToCheck,playerToCheck){
                     }
                 }
             }
-            if(boardCells==4){ //in 4x4, players can win by playing a square
-                if(plays.includes(plays[h] + 1)){
-                    if(plays.includes(plays[h] + boardCells)){
-                        if(plays.includes((plays[h] + boardCells)+1)){
-                            if(endGameWhenWon){
+
+            if(boardCells==4) { //in 4x4, players can win by playing a square
+                if(plays.includes(plays[h] + 1)) {
+                    if(plays.includes(plays[h] + boardCells)) {
+                        if(plays.includes((plays[h] + boardCells)+1)) {
+                            if(endGameWhenWon) {
                                 currentPlayerWins("as square");
                             }
                             return true;
                         }
                     }
                 }
-                if(plays.includes(plays[h] + (boardCells - 1))){ //check for a diamond pattern
-                    if(plays.includes(plays[h] + (boardCells + 1))){ //check cell south east
-                        if(plays.includes(plays[h] + (boardCells*2))){ //check cell 2 rows below
-                            if(endGameWhenWon){
+
+                if(plays.includes(plays[h] + (boardCells - 1))) { //check for a diamond pattern
+                    if(plays.includes(plays[h] + (boardCells + 1))) { //check cell south east
+                        if(plays.includes(plays[h] + (boardCells*2))) { //check cell 2 rows below
+                            if(endGameWhenWon) {
                                 currentPlayerWins("as diamond");
                             }
                             return true;
@@ -165,118 +195,203 @@ function checkWin(endGameWhenWon,boardToCheck,playerToCheck){
             }
         }
     }
+
+
     game.moves++ //increments moves by one after checking game hasn't been won
-    if(game.moves ==(boardCells**2)){ //if all moves have been played and there is no winner
-        if(endGameWhenWon){
+    // If all moves have been played and there is no winner
+    if(game.moves ==(boardCells**2)) {
+        if(endGameWhenWon) {
             console.log("no winners");
             game.state = state.STOPPED;
             turnIndicator();
             return true;
         }
+        // Returns "none" if endGameWhenWon flag is set to false
         return "none";
         
     }
+    // returns 'false' if the game hasnt ended yet
     return false;
 }
-function currentPlayerWins(method){
-    console.log(game.turn.symbol,"wins",method);
-    game.state = state.WON;
-    turnIndicator();
+
+// outputs & displays which and how the player one
+function currentPlayerWins(method) { // 'method' indicates how the player won, i.e. HORIZONTALLY, VERTICALLY, DIAGONALLY
+    console.log(game.turn.symbol, " - wins - ", method); // outputs which player won and how
+    game.state = state.WON; // updates the game state
+    turnIndicator(); // updates the on screen text to show who has won
 }
 
-function addMark(c){
-    if (game.state == state.PLAYING){ //only works when game is playing
-        if (board[c].data == null){ //checks cell is empty before playing
+// adds the playerX.symbol to a cell when they play in it
+function addMark(c) {
+    //first, checks that the player can play in cell:
+    if (game.state == state.PLAYING) { //only works when game is playing
+        if (board[c].data == null) { //checks cell is empty before playing
             board[c].data = game.turn; // updates the board array with which player played
+
+            //sets contexs values
             context.font = "36pt sans-serif";
             context.textAlign = "center";
-            if(game.turn == player1){
-                context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
-                console.log('human played in cell',c);
-                if(checkWin(true,board,game.turn) == false){
-                    game.turn = player2;
-                    turnIndicator();
-                    setTimeout(() => {
-                        minimax(board,player2);
+
+            // performs code based on who plays:
+            // PLAYER 1'S TURN
+            if(game.turn == player1) {
+                // sets the fillText to the playerX.symbol in shmexy format
+                context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth)) - (cellWidth/2), (board[c].y * (borderWidth + cellWidth)) - (cellWidth/2));
+                
+                console.log('human played in cell:',c); // outputs the play to console
+
+                // checks if game has ended
+                if(checkWin(true, board, game.turn) == false) {
+                    game.turn = player2; // player 2's turn
+                    turnIndicator(); // updates player turn on screen
+                    setTimeout(() => { // adds an artificial pause
+                        addMark(minimax(board, player2).index);
                       }, "300")
                 }
-            } else if (game.turn == player2){
+
+            // PLAYER 2'S TURN
+            } else if (game.turn == player2) {
+                // sets the fillText to the playerX.symbol in shmexy format
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
-                console.log('computer played in cell',c);
-                if(!checkWin(true,board,game.turn)){
-                    game.turn = player1;
-                    turnIndicator();
-                    
+                
+                console.log('computer played in cell: ',c); // outputs the play to console
+                // checks if game has ended
+                if(!checkWin(true,board,game.turn)) {
+                    game.turn = player1; // player 2's turn
+                    turnIndicator(); // updates player turn on screen
+                   
                 }
             }
-        }else{ //when cell is not empty
-            console.log('cell already played!')
+
+        } else { //when cell is not empty
+            console.error('cell already played')
         }
     }
 };
-
 createBoard();
 
 
-function minimax(tempBoard,tempPlayer){
-    if(difficulty == 0){ //'easy' mode chooses a random move
+let iter = 0;
+function minimax(tempBoard,player) {
+
+    // DIFFICULTY: 0, 'easy'
+    // 'easy' mode chooses a random move
+    if(difficulty == 0) {
         let moves = getPossibleMoves(tempBoard)
-        let move = moves[Math.floor(Math.random() * moves.length)]
-        console.log(move)
-        addMark(move);
+        let thisMove = moves[Math.floor(Math.random() * moves.length)]
+        console.log(thisMove)
+        addMark(thisMove);
         return false;
     }
-    if (checkWin(false,tempBoard,player1)){ //checks if the human wins
-        return {score:-10};
-    } else if (checkWin(false,tempBoard,player2)){ //checks if the computer wins
-        return {score:10};
-    } else if (checkWin(false,tempBoard,player1) == "none"){ //checks if the game ends with no winners
-        return {score:0};
-    }
-    let movesConsidering = [];
-    let thisPossMoves = getPossibleMoves(tempBoard);
-    for (let j=0;j<=thisPossMoves.length;j++){
-        let thisMove = {};
-        thisMove.index = thisPossMoves[j];
-        tempBoard[thisPossMoves[j]].data = tempPlayer.symbol;
-        if(tempPlayer == player2){
-            let nextMove = minimax(tempBoard,player1);
-            thisMove.score = nextMove.score;
-        }else if(tempPlayer == player1){
-            let nextMove = minimax(tempBoard,player2);
-            thisMove.score = nextMove.score;
-        }
-        console.log(tempBoard);
-        movesConsidering.push(thisMove);
-    }
-    console.log(thisPossMoves,tempBoard)
 
-    function getPossibleMoves(getBoard){
-        let possibleMoves = []
-        for(let m=0;m<getBoard.length;m++){
-            if(getBoard[m].data === null){
-                possibleMoves.push(m);
-            }
-        };
-        return possibleMoves;
+    iter++;
+    let array = getPossibleMoves(tempBoard); // gets an array of all possible moves
+    
+    // DIFFICULTY: 1, 'normal'
+    // 'normal' mode uses the minimax algorithm
+    if (checkWin(false, tempBoard, player1)) { //checks if the human wins
+       return {score: -10};
+    } else if (checkWin(false, tempBoard, player2)) { //checks if the computer wins
+        return {score: 10};
+    } else if (array.length === 0) { //checks if the game ends with no winners
+        return {score: 0};
     }
+
+    /**
+     * This code is trying to evaluate the best possible move for a given player in the game using the minimax algorithm. 
+     * It generates a list of possible moves, makes each move on a temporary board, 
+     * calculates the minimax score for the next move, 
+     * and stores the score and index of each move in an array.
+     */
+    let moves = []; // declare an empty array holding indexes of potential moves
+    // loop through all possible moves
+    for (let i = 0; i < array.length; i++) {
+        let thisMove = {}; // create an empty object to hold information about this move
+        thisMove.index = tempBoard[array[i]]; // set the index of this move in the board array
+        tempBoard[array[i]].data = player; // make the move on the temporary board
+
+        if(player == player2) { // if it's player 2's turn
+            let nextMove = minimax(tempBoard,player1); // calculate the minimax score for the next move (player 1's turn)
+            thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
+        } else { // if it's player 1's turn
+            let nextMove = minimax(tempBoard,player2); // calculate the minimax score for the next move (player 2's turn)
+            thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
+        }
+        console.log("minimax -thisMove: ",i ," -temp board:", tempBoard); // log the temporary board to the console (for debugging purposes)
+        tempBoard[array[i]].data = thisMove.index; // reset the board to empty for the next iteration
+        moves.push(thisMove); // add this move to the array of potential moves
+    }
+    console.log("minimax -iteration:",iter, " -possible moves:", array, " -temp board:", tempBoard) // log the list of possible moves and the final state of the board (for debugging purposes)
+
+    var bestMove;
+    if (player == player2) {
+        var bestScore = -100000;
+        for (let i = 0; i < moves.length; i++) {
+            if (moves[i].score > bestScore) {
+                bestScore = moves[i].score;
+                bestMove = i;
+            }
+            if (bestScore === 10) { // exit minimax if the best score is found
+                break;
+            }
+        }
+    } else {
+        var bestScore = 100000;
+        for (let i = 0; i < moves.length; i++) {
+            if (moves[i].score < bestScore) {
+                bestScore = moves[i].score;
+                bestMove = i;
+            }
+            if (bestScore === -10) { // exit minimax if the best score is found
+                break;
+            }
+        }
+    }
+    let index = (moves[bestMove].index.y - 1) * 3 + (moves[bestMove].index.x - 1)
+
+    console.warn("best move: (", moves[bestMove].index.x,",",moves[bestMove].index.y, ")");
+    console.warn("best move:", index);
+    board[index].data = null;
+    
+    return {score: bestScore, index: index};
+
 }
 
-canvas.addEventListener('click',function(event){
+function getPossibleMoves(possMovesBoard) { // define a function that takes a game board as input
+    let possibleMoves = [] // create an empty array to hold the possible moves
+    for(let m=0; m<possMovesBoard.length; m++) { // loop through each square on the board
+        if(possMovesBoard[m].data === null) { // if the square is empty
+            possibleMoves.push(m); // add the index of the square to the array of possible moves
+        }
+    };
+    return possibleMoves; // return the array of possible moves
+}
+
+// Adds an event listener to the canvas that listens for clicks
+canvas.addEventListener('click',function(event) {
+    // Calculates the x and y position of the click relative to the canvas
     let x = Math.round(event.clientX - canvas.getBoundingClientRect().left);
     let y = Math.round(event.clientY - canvas.getBoundingClientRect().top);
+
+    // Calculates the x and y position of the cell that was clicked
     let cellx = Math.floor((x-(borderWidth*(boardCells+1)))/cellWidth) + 1;
     let celly = Math.floor((y-(borderWidth*(boardCells+1)))/cellWidth) + 1;
-    //1 is added as the x&y coordinates start from 1 in the 'board array'
+    
+    // Adds 1 to the x and y coordinates to match the 'board array'
+    // Finds the index of the clicked cell in the 'board' array using its x and y coordinates
     let index = board.findIndex(board => board.x == cellx && board.y == celly);
-    switch(index){
+
+    // A switch statement that executes different code based on the value of 'index'
+    switch(index) {
         case -1:
-            console.log("clicked outside board");
+            console.error("clicked outside board");
             break;
         default:
-            console.log(cellx,celly);
-            console.log("clicked on cell",index);
-            if(game.turn == player1){
+            console.warn("clicked on cell: (", cellx,",",celly, ")");
+            console.warn("clicked on cell:", index);
+
+            // If it's the human player's turn, call the addMark function with the clicked cell's index as an argument
+            if(game.turn == player1) {
                 addMark(index);
             }
     } ;
