@@ -17,7 +17,7 @@ const state = {
 }
 
 // Define player objects with symbols and names
-let player1 = {
+const player1 = {
     symbol: 'X',
     name: 'Human'
 };
@@ -245,14 +245,12 @@ function addMark(c) {
                     game.turn = player2; // player 2's turn
                     turnIndicator(); // updates player turn on screen
                     setTimeout(() => { // adds an artificial pause
-                        minimax(board,player2);
+                        addMark(minimax(board, player2).index);
                       }, "300")
                 }
 
             // PLAYER 2'S TURN
             } else if (game.turn == player2) {
-                let result = minimax2(board, player2, 0); // Calculate the best move using the minimax algorithm
-                board[result.index].data = player2.symbol; // Make the move on the board
                 // sets the fillText to the playerX.symbol in shmexy format
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 
@@ -272,88 +270,28 @@ function addMark(c) {
 };
 createBoard();
 
-// This function returns an object containing the index of the best move to make, and its corresponding score
-function minimax2(board, player, depth) {
-    // Check if the current board state is a terminal state (i.e. someone has won or the board is full)
-    if (checkWin(true, board, player1)) {
-      return {score: -10 + depth}; // If player 1 wins, return a score of -10 (plus the current depth)
-    } else if (checkWin(true, board, player2)) {
-      return {score: 10 - depth}; // If player 2 wins, return a score of 10 (minus the current depth)
-    } else if (getPossibleMoves(board).length === 0) {
-      return {score: 0}; // If the board is full and nobody has won, return a score of 0
-    }
-  
-    // If we haven't reached a terminal state, recursively call the minimax function for each possible move
-    let moves = [];
-    let possibleMoves = getPossibleMoves(board);
-    for (let i = 0; i < possibleMoves.length; i++) {
-      let move = {};
-      move.index = possibleMoves[i];
-      board[possibleMoves[i]].data = player.symbol; // Make the move
-      if (player == player2) {
-        let result = minimax(board, player1, depth + 1);
-        move.score = result.score;
-      } else {
-        let result = minimax(board, player2, depth + 1);
-        move.score = result.score;
-      }
-      board[possibleMoves[i]].data = null; // Undo the move
-      moves.push(move);
-    }
-  
-    // If it's player 2's turn, find the move with the highest score
-    if (player == player2) {
-      let bestMove = null;
-      let bestScore = -Infinity;
-      for (let i = 0; i < moves.length; i++) {
-        if (moves[i].score > bestScore) {
-          bestScore = moves[i].score;
-          bestMove = moves[i].index;
-        }
-      }
-      return {score: bestScore, index: bestMove};
-    } 
-    // If it's player 1's turn, find the move with the lowest score
-    else {
-      let bestMove = null;
-      let bestScore = Infinity;
-      for (let i = 0; i < moves.length; i++) {
-        if (moves[i].score < bestScore) {
-          bestScore = moves[i].score;
-          bestMove = moves[i].index;
-        }
-      }
-      return {score: bestScore, index: bestMove};
-    }
-  }
-  
-
-
-
-
-
 
 let iter = 0;
-function minimax(reboard,player) {
+function minimax(tempBoard,player) {
 
     // DIFFICULTY: 0, 'easy'
     // 'easy' mode chooses a random move
     if(difficulty == 0) {
         let moves = getPossibleMoves(tempBoard)
-        let move = moves[Math.floor(Math.random() * moves.length)]
-        console.log(move)
-        addMark(move);
+        let thisMove = moves[Math.floor(Math.random() * moves.length)]
+        console.log(thisMove)
+        addMark(thisMove);
         return false;
     }
 
     iter++;
-    let array = getPossibleMoves(reboard); // gets an array of all possible moves
+    let array = getPossibleMoves(tempBoard); // gets an array of all possible moves
     
     // DIFFICULTY: 1, 'normal'
     // 'normal' mode uses the minimax algorithm
-    if (checkWin(false, reboard, player1)) { //checks if the human wins
+    if (checkWin(false, tempBoard, player1)) { //checks if the human wins
        return {score: -10};
-    } else if (checkWin(false, reboard, player2)) { //checks if the computer wins
+    } else if (checkWin(false, tempBoard, player2)) { //checks if the computer wins
         return {score: 10};
     } else if (array.length === 0) { //checks if the game ends with no winners
         return {score: 0};
@@ -368,22 +306,22 @@ function minimax(reboard,player) {
     let moves = []; // declare an empty array holding indexes of potential moves
     // loop through all possible moves
     for (let i = 0; i < array.length; i++) {
-        let move = {}; // create an empty object to hold information about this move
-        move.index = reboard[array[i]]; // set the index of this move in the board array
-        reboard[array[i]].data = player.symbol; // make the move on the temporary board
+        let thisMove = {}; // create an empty object to hold information about this move
+        thisMove.index = tempBoard[array[i]]; // set the index of this move in the board array
+        tempBoard[array[i]].data = player; // make the move on the temporary board
 
         if(player == player2) { // if it's player 2's turn
-            let nextMove = minimax(reboard,player1); // calculate the minimax score for the next move (player 1's turn)
-            move.score = nextMove.score; // set the score for this move to be the score of the next move
+            let nextMove = minimax(tempBoard,player1); // calculate the minimax score for the next move (player 1's turn)
+            thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
         } else { // if it's player 1's turn
-            let nextMove = minimax(reboard,player2); // calculate the minimax score for the next move (player 2's turn)
-            move.score = nextMove.score; // set the score for this move to be the score of the next move
+            let nextMove = minimax(tempBoard,player2); // calculate the minimax score for the next move (player 2's turn)
+            thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
         }
-        console.log("minimax -move: ",i ," -temp board:", reboard); // log the temporary board to the console (for debugging purposes)
-        reboard[array[i]].data = move.index; // reset the board to empty for the next iteration
-        moves.push(move); // add this move to the array of potential moves
+        console.log("minimax -thisMove: ",i ," -temp board:", tempBoard); // log the temporary board to the console (for debugging purposes)
+        tempBoard[array[i]].data = thisMove.index; // reset the board to empty for the next iteration
+        moves.push(thisMove); // add this move to the array of potential moves
     }
-    console.log("minimax -iteration:",iter, " -possible moves:", array, " -temp board:", reboard) // log the list of possible moves and the final state of the board (for debugging purposes)
+    console.log("minimax -iteration:",iter, " -possible moves:", array, " -temp board:", tempBoard) // log the list of possible moves and the final state of the board (for debugging purposes)
 
     var bestMove;
     if (player == player2) {
@@ -415,8 +353,7 @@ function minimax(reboard,player) {
     console.warn("best move:", index);
     board[index].data = null;
     
-    addMark(index);
-    return false;
+    return {score: bestScore, index: index};
 
 }
 
