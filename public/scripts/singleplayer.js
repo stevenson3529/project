@@ -235,7 +235,7 @@ function addMark(c) {
             // performs code based on who plays:
             // PLAYER 1'S TURN
             if(game.turn == player1) {
-                // sets the fillText to the playerX.symbol in shmexy format
+                // sets the fillText to the playerX.symbol
                 context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth)) - (cellWidth/2), (board[c].y * (borderWidth + cellWidth)) - (cellWidth/2));
                 
                 console.log('human played in cell:',c); // outputs the play to console
@@ -251,15 +251,14 @@ function addMark(c) {
 
             // PLAYER 2'S TURN
             } else if (game.turn == player2) {
-                // sets the fillText to the playerX.symbol in shmexy format
+                // sets the fillText to theplayerX.symbol
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
-                
                 console.log('computer played in cell: ',c); // outputs the play to console
+
                 // checks if game has ended
                 if(!checkWin(true,board,game.turn)) {
                     game.turn = player1; // player 2's turn
-                    turnIndicator(); // updates player turn on screen
-                   
+                    turnIndicator(); // updates player turn on screen  
                 }
             }
 
@@ -303,7 +302,7 @@ function minimax(tempBoard,player) {
      * calculates the minimax score for the next move, 
      * and stores the score and index of each move in an array.
      */
-    let moves = []; // declare an empty array holding indexes of potential moves
+    let movesConsidering = []; // declare an empty array holding indexes of potential moves
     // loop through all possible moves
     for (let i = 0; i < array.length; i++) {
         let thisMove = {}; // create an empty object to hold information about this move
@@ -319,16 +318,16 @@ function minimax(tempBoard,player) {
         }
         console.log("minimax -thisMove: ",i ," -temp board:", tempBoard); // log the temporary board to the console (for debugging purposes)
         tempBoard[array[i]].data = thisMove.index; // reset the board to empty for the next iteration
-        moves.push(thisMove); // add this move to the array of potential moves
+        movesConsidering.push(thisMove); // add this move to the array of potential moves
     }
     console.log("minimax -iteration:",iter, " -possible moves:", array, " -temp board:", tempBoard) // log the list of possible moves and the final state of the board (for debugging purposes)
 
     var bestMove;
     if (player == player2) {
         var bestScore = -100000;
-        for (let i = 0; i < moves.length; i++) {
-            if (moves[i].score > bestScore) {
-                bestScore = moves[i].score;
+        for (let i = 0; i < movesConsidering.length; i++) {
+            if (movesConsidering[i].score > bestScore) {
+                bestScore = movesConsidering[i].score;
                 bestMove = i;
             }
             if (bestScore === 10) { // exit minimax if the best score is found
@@ -337,9 +336,9 @@ function minimax(tempBoard,player) {
         }
     } else {
         var bestScore = 100000;
-        for (let i = 0; i < moves.length; i++) {
-            if (moves[i].score < bestScore) {
-                bestScore = moves[i].score;
+        for (let i = 0; i < movesConsidering.length; i++) {
+            if (movesConsidering[i].score < bestScore) {
+                bestScore = movesConsidering[i].score;
                 bestMove = i;
             }
             if (bestScore === -10) { // exit minimax if the best score is found
@@ -347,9 +346,9 @@ function minimax(tempBoard,player) {
             }
         }
     }
-    let index = (moves[bestMove].index.y - 1) * 3 + (moves[bestMove].index.x - 1)
+    let index = (movesConsidering[bestMove].index.y - 1) * 3 + (movesConsidering[bestMove].index.x - 1)
 
-    console.warn("best move: (", moves[bestMove].index.x,",",moves[bestMove].index.y, ")");
+    console.warn("best move: (", movesConsidering[bestMove].index.x,",",movesConsidering[bestMove].index.y, ")");
     console.warn("best move:", index);
     board[index].data = null;
     
