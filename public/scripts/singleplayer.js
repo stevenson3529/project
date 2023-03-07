@@ -309,7 +309,7 @@ function minimax(tempBoard,player) {
         thisMove.index = tempBoard[array[i]]; // set the index of this move in the board array
         tempBoard[array[i]].data = player; // make the move on the temporary board
 
-        if(player == player2) { // if it's player 2's turn
+        if(player == player2) { // if it is the humans turn
             let nextMove = minimax(tempBoard,player1); // calculate the minimax score for the next move (player 1's turn)
             thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
         } else { // if it's player 1's turn
@@ -322,34 +322,34 @@ function minimax(tempBoard,player) {
     }
     console.log("minimax -iteration:",iter, " -possible moves:", array, " -temp board:", tempBoard) // log the list of possible moves and the final state of the board (for debugging purposes)
 
-    var bestMove;
-    if (player == player2) {
-        var bestScore = -100000;
-        for (let i = 0; i < movesConsidering.length; i++) {
-            if (movesConsidering[i].score > bestScore) {
-                bestScore = movesConsidering[i].score;
-                bestMove = i;
+    let bestMove;
+    if (player == player2) { //if it is the computer turn
+        let bestScore = -100000;
+        for (let i = 0; i < movesConsidering.length; i++) { //Check every move that the algorithm is considering
+            if (movesConsidering[i].score > bestScore) { //if the current score is better than the best score
+                bestScore = movesConsidering[i].score; //save the best score
+                bestMove = i; //remember which index the best move is at
             }
-            if (bestScore === 10) { // exit minimax if the best score is found
-                break;
+            if (bestScore === 10) { 
+                break; // exit minimax if the best score is found
             }
         }
-    } else {
-        var bestScore = 100000;
+    } else { //if it is the human's turn
+        let bestScore = 100000;
         for (let i = 0; i < movesConsidering.length; i++) {
             if (movesConsidering[i].score < bestScore) {
                 bestScore = movesConsidering[i].score;
                 bestMove = i;
             }
-            if (bestScore === -10) { // exit minimax if the best score is found
-                break;
+            if (bestScore === -10) { 
+                break; // exit minimax if the best score is found
             }
         }
     }
-    let index = (movesConsidering[bestMove].index.y - 1) * 3 + (movesConsidering[bestMove].index.x - 1)
+    let index = (movesConsidering[bestMove].index.y - 1) * boardCells + (movesConsidering[bestMove].index.x - 1) //Converts the best move found in the algorithm to the index found in the main board array
 
-    console.warn("best move: (", movesConsidering[bestMove].index.x,",",movesConsidering[bestMove].index.y, ")");
-    console.warn("best move:", index);
+    console.log("best move: (", movesConsidering[bestMove].index.x,",",movesConsidering[bestMove].index.y, ")");
+    console.log("best move:", index);
     board[index].data = null;
     
     return {score: bestScore, index: index};
