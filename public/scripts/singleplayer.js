@@ -316,11 +316,11 @@ function minimax(tempBoard,player) {
             let nextMove = minimax(tempBoard,player2); // calculate the minimax score for the next move (player 2's turn)
             thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
         }
-        console.log("minimax -thisMove: ",i ," -temp board:", tempBoard); // log the temporary board to the console (for debugging purposes)
+        console.log("minimax -thisMove: ",i ," temp board:", tempBoard); // log the temporary board to the console (for debugging purposes)
         tempBoard[array[i]].data = thisMove.index; // reset the board to empty for the next iteration
         movesConsidering.push(thisMove); // add this move to the array of potential moves
     }
-    console.log("minimax -iteration:",iter, " -possible moves:", array, " -temp board:", tempBoard) // log the list of possible moves and the final state of the board (for debugging purposes)
+    console.log("iteration:",iter, " possible moves:", array, " temp board:", tempBoard) // log the list of possible moves and the final state of the board (for debugging purposes)
 
     let bestMove;
     if (player == player2) { //if it is the computer turn
@@ -349,9 +349,9 @@ function minimax(tempBoard,player) {
     let index = (movesConsidering[bestMove].index.y - 1) * boardCells + (movesConsidering[bestMove].index.x - 1) //Converts the best move found in the algorithm to the index found in the main board array
 
     console.log("best move: (", movesConsidering[bestMove].index.x,",",movesConsidering[bestMove].index.y, ")");
-    console.log("best move:", index);
-    board[index].data = null;
-    
+    console.log("at index:", index);
+    console.log("with score:",bestScore);
+  
     return {score: bestScore, index: index};
 
 }
