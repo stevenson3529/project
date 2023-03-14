@@ -303,12 +303,12 @@ function minimax(tempBoard,player) {
      * and stores the score and index of each move in an array.
      */
     let movesConsidering = []; // declare an empty array holding indexes of potential moves
+    let thisMove = []
     // loop through all possible moves
     for (let i = 0; i < array.length; i++) {
-        let thisMove = {}; // create an empty object to hold information about this move
+        thisMove = []; // create an empty object to hold information about this move
         thisMove.index = tempBoard[array[i]]; // set the index of this move in the board array
         tempBoard[array[i]].data = player; // make the move on the temporary board
-
         if(player == player2) { // if it is the humans turn
             let nextMove = minimax(tempBoard,player1); // calculate the minimax score for the next move (player 1's turn)
             thisMove.score = nextMove.score; // set the score for this move to be the score of the next move
@@ -350,9 +350,8 @@ function minimax(tempBoard,player) {
 
     console.log("best move: (", movesConsidering[bestMove].index.x,",",movesConsidering[bestMove].index.y, ")");
     console.log("at index:", index);
-    console.log("with score:",bestScore);
   
-    return {score: bestScore, index: index};
+    return {index: index};
 
 }
 
