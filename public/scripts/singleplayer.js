@@ -214,7 +214,7 @@ function checkWin(endGameWhenWon,boardToCheck,playerToCheck) {
     return false;
 }
 
-// outputs & displays which and how the player one
+// outputs & displays which and how the player won
 function currentPlayerWins(method) { // 'method' indicates how the player won, i.e. HORIZONTALLY, VERTICALLY, DIAGONALLY
     console.log(game.turn.symbol, " - wins - ", method); // outputs which player won and how
     game.state = state.WON; // updates the game state
