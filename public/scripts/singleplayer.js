@@ -66,8 +66,8 @@ function createBoard() {
             context.clearRect(((a*borderWidth)+(b*cellWidth)),((v*borderWidth)+(h*cellWidth)),cellWidth,cellWidth)
         }
     }
-    drawSquares(); // Call the drawSquares() function to draw all cells on the board
-    turnIndicator(); // Call the turnIndicator() function to update the display for the active player's turn
+    drawSquares(); // draw all cells on the board
+    turnIndicator(); // update the display for the active player's turn
 };
 
 // This function updates the display for the active player's turn
@@ -96,7 +96,7 @@ function turnIndicator() {
 
 function checkWin(endGameWhenWon,boardToCheck,playerToCheck) {
     // find all squares current player has played in
-    let plays = []; // initialise an empty array to hold the indexes of all the cells a player has played in
+    let plays = []; // empty array to hold the indexes of all the cells a player has played in
 
     // checks through each cell and pushes its index to plays[] if it has been played in
     for (let g=0;g<boardToCheck.length;g++) {
@@ -197,7 +197,6 @@ function checkWin(endGameWhenWon,boardToCheck,playerToCheck) {
     }
 
 
-    game.moves++ //increments moves by one after checking game hasn't been won
     // If all moves have been played and there is no winner
     if(game.moves ==(boardCells**2)) {
         if(endGameWhenWon) {
@@ -225,7 +224,7 @@ function currentPlayerWins(method) { // 'method' indicates how the player won, i
 function addMark(c) {
     //first, checks that the player can play in cell:
     if (game.state == state.PLAYING) { //only works when game is playing
-        if (board[c].data == null) { //checks cell is empty before playing
+        if (board[c].data == null || board[c].data == board[c].data.data) { //checks cell is empty before playing
             board[c].data = game.turn; // updates the board array with which player played
 
             //sets contexs values
@@ -237,7 +236,7 @@ function addMark(c) {
             if(game.turn == player1) {
                 // sets the fillText to the playerX.symbol
                 context.fillText(player1.symbol,(board[c].x * (borderWidth + cellWidth)) - (cellWidth/2), (board[c].y * (borderWidth + cellWidth)) - (cellWidth/2));
-                
+                game.moves++ //increments moves by one after checking game hasn't been won
                 console.log('human played in cell:',c); // outputs the play to console
 
                 // checks if game has ended
@@ -253,6 +252,7 @@ function addMark(c) {
             } else if (game.turn == player2) {
                 // sets the fillText to theplayerX.symbol
                 context.fillText(player2.symbol,(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
+                game.moves++ //increments moves by one after checking game hasn't been won
                 console.log('computer played in cell: ',c); // outputs the play to console
 
                 // checks if game has ended
@@ -303,7 +303,6 @@ function minimax(tempBoard,player) {
      * and stores the score and index of each move in an array.
      */
     let movesConsidering = []; // declare an empty array holding indexes of potential moves
-    let thisMove = {}
     // loop through all possible moves
     for (let i = 0; i < array.length; i++) {
         thisMove = {"index":null,"score":null}; // create an empty object to hold information about this move
@@ -323,8 +322,9 @@ function minimax(tempBoard,player) {
     console.log("iteration:",iter, " possible moves:", array, " temp board:", tempBoard) // log the list of possible moves and the final state of the board (for debugging purposes)
 
     let bestMove;
+    let score;
     if (player == player2) { //if it is the computer turn
-        let bestScore = -100000;
+        let bestScore = -10000;
         for (let i = 0; i < movesConsidering.length; i++) { //Check every move that the algorithm is considering
             if (movesConsidering[i].score > bestScore) { //if the current score is better than the best score
                 bestScore = movesConsidering[i].score; //save the best score
@@ -335,7 +335,7 @@ function minimax(tempBoard,player) {
             }
         }
     } else { //if it is the human's turn
-        let bestScore = 100000;
+        let bestScore = 10000;
         for (let i = 0; i < movesConsidering.length; i++) {
             if (movesConsidering[i].score < bestScore) {
                 bestScore = movesConsidering[i].score;
