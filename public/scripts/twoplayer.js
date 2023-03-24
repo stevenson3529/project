@@ -24,7 +24,7 @@ const player2 = {
 };
 const game = {
     state: state.PLAYING,
-    turn: player1.symbol,
+    turn: player1,
     moves: 0
 }
 
@@ -173,18 +173,18 @@ function addMark(c){
             board[c].data = game.turn; // updates the board array with which player played
             context.font = "36pt sans-serif";
             context.textAlign = "center";
-            if(game.turn == player1.symbol){
+            if(game.turn == player1){
                 context.fillText("X",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('X played in cell',c);
                 if(checkWin() == false){
-                    game.turn = player2.symbol;
+                    game.turn = player2;
                     turnIndicator();
                 }
-            } else if (game.turn == player2.symbol){
+            } else if (game.turn == player2){
                 context.fillText("O",(board[c].x * (borderWidth + cellWidth))-(cellWidth/2),(board[c].y * (borderWidth + cellWidth))-(cellWidth/2));
                 console.log('O played in cell',c);
                 if(!checkWin()){
-                    game.turn = player1.symbol;
+                    game.turn = player1;
                     turnIndicator();
                 }
             }
