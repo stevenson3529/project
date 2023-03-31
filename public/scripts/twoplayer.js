@@ -59,9 +59,9 @@ function turnIndicator(){
     context.font = "24pt sans-serif";
     context.textAlign = "start"
     if(game.state == state.PLAYING){    
-        context.fillText("Turn: " + game.turn, boardSize + 30, 50)
+        context.fillText("Turn: " + game.turn.symbol, boardSize + 30, 50)
     }else if(game.state == state.WON){
-        context.fillText(game.turn + " wins", boardSize + 30, 50)
+        context.fillText(game.turn.symbol + " wins", boardSize + 30, 50)
     }else if(game.state == state.STOPPED){
         context.fillText("No winner", boardSize + 30, 50)
     }
